@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Theorie Quiz – Blok 1</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DefendMe Quiz">
+  <link rel="apple-touch-icon" href="/icons/apple-icon-180.png"> <link rel="apple-touch-startup-image" href="/icons/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <style>
+    /* Lettertype aangepast naar Open Sans */
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+    /* Basis body styling voor de achtergrond */
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      /* Achtergrond met de opgegeven afbeelding van homepage.html */
+      background: url('https://i.pinimg.com/73x/56/17/d6/5617d6088a5794f177425ae6780041dd.jpg') no-repeat center center fixed;
+      background-size: cover; /* Zorgt ervoor dat de afbeelding de hele achtergrond bedekt */
+      font-family: 'Open Sans', sans-serif; /* Lettertype aangepast naar Open Sans */
+      overflow: hidden; /* Voorkom scrollbalken door de grote achtergrond */
+    }
+
+    /* Styling voor de quiz container (glassmorphism effect) */
+    .quiz-container {
+      width: 90%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.2); /* Transparante witte achtergrond */
+      border-radius: 20px; /* Meer afgeronde hoeken */
+      padding: 2.5em; /* Meer padding voor een ruimere look */
+      color: #333; /* Donkere tekstkleur voor contrast op lichte achtergrond */
+      text-align: center;
+      backdrop-filter: blur(10px); /* Frosted glass effect */
+      -webkit-backdrop-filter: blur(10px); /* Voor Safari */
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Subtiele witte rand */
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+      position: relative; /* Voor de toggle knop */
+      display: flex; /* Maak de container een flexbox */
+      flex-direction: column; /* Stapel items verticaal */
+      align-items: center; /* Centreer items horizontaal */
+      justify-content: flex-start; /* Lijn items bovenaan uit */
+      max-height: 90vh; /* Zorg voor scrollen indien nodig */
+      overflow-y: auto;
+    }
+
+    /* Styling voor de titels */
+    h1 {
+        font-size: 1.8em; /* Iets groter dan 1.5em voor de quiz */
+        margin-bottom: 0.8em;
+        font-weight: bold; /* Vetgedrukt voor titels */
+        color: #333; /* Donkere kleur */
+        animation: none; /* Verwijder de fadeIn animatie van h1 */
+    }
+
+    h2 {
+        font-size: 2em; /* Groter voor de quiz titel */
+        margin-bottom: 1em;
+        color: #333; /* Donkere kleur */
+    }
+
+    /* Styling voor de vraagtekst */
+    .question {
+      font-size: 1.3em; /* Iets groter voor leesbaarheid */
+      margin-bottom: 1.8em; /* Meer ruimte onder de vraag */
+      font-weight: 500;
+      color: #333;
+    }
+
+    /* Styling voor de optieknoppen */
+    .option {
+      background-color: rgba(255, 255, 255, 0.4); /* Transparante lichte achtergrond */
+      color: #333; /* Donkere tekstkleur */
+      padding: 1em; /* Meer padding */
+      margin: 0.7em 0; /* Meer ruimte tussen opties */
+      border: none;
+      border-radius: 10px; /* Afgeronde hoeken */
+      cursor: pointer;
+      font-size: 1.1em; /* Iets groter lettertype */
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+      transition: background-color 0.3s ease, transform 0.2s ease; /* Vloeiende overgang */
+    }
+
+    .option:hover {
+      background-color: rgba(255, 255, 255, 0.6); /* Lichter bij hover */
+      transform: translateY(-2px); /* Licht omhoog bewegen bij hover */
+    }
+
+    /* Styling voor het resultaatbericht */
+    .result {
+      margin-top: 1.5em; /* Meer ruimte boven het resultaat */
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    /* Kleuren voor resultaten */
+    .result.correct {
+        color: #4CAF50; /* Groen */
+    }
+    .result.wrong {
+        color: #F44336; /* Rood */
+    }
+    .result.timeout {
+        color: #FFC107; /* Oranje voor tijd om */
+    }
+
+    /* Styling voor de volgende/doorgaan knoppen */
+    .next-btn, .continue-btn {
+      margin-top: 2em; /* Meer ruimte boven de knoppen */
+      padding: 1em; /* Meer padding */
+      width: 100%;
+      border: none;
+      border-radius: 10px; /* Afgeronde hoeken */
+      background-color: rgba(0, 188, 212, 0.6); /* Transparant cyaan */
+      color: white; /* Witte tekst */
+      font-size: 1.1em;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+      transition: background-color 0.3s ease, transform 0.2s ease; /* Vloeiende overgang */
+    }
+
+    .next-btn:hover, .continue-btn:hover {
+      background-color: rgba(0, 188, 212, 0.8); /* Donkerder cyaan bij hover */
+      transform: translateY(-2px); /* Licht omhoog bewegen bij hover */
+    }
+
+    /* Styling voor de timer display */
+    .timer-display {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 1em;
+        color: #555;
+    }
+
+    /* Styling voor de toggle knop (hamburger menu) - overgenomen van homepage.html */
+    .toggle-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 2em;
+      color: #333; /* Donkere kleur voor het icoon voor contrast op lichte achtergrond */
+      cursor: pointer;
+      z-index: 1001; /* Zorg ervoor dat het boven de zijbalk ligt */
+    }
+
+    /* Styling voor de zijbalk - overgenomen van homepage.html */
+    .sidebar {
+      height: 100%;
+      width: 0; /* Initieel verborgen */
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      /* Achtergrond met de opgegeven afbeelding */
+      background: url('https://i.pinimg.com/73x/56/17/d6/5617d6088a5794f177425ae6780041dd.jpg') no-repeat center center fixed;
+      background-size: cover; /* Zorgt ervoor dat de afbeelding de hele achtergrond bedekt */
+      overflow-x: hidden;
+      transition: 0.5s; /* Vloeiende overgang bij openen/sluiten */
+      padding-top: 60px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar a {
+      padding: 15px 25px;
+      text-decoration: none;
+      font-size: 1.5em;
+      color: black; /* Zwarte tekst voor menu-items */
+      display: block;
+      transition: 0.3s;
+      text-align: left;
+    }
+
+    .sidebar a:hover {
+      color: white; /* Witte tekst bij hover voor beter contrast */
+      background-color: rgba(0, 0, 0, 0.2); /* Lichte transparante zwarte achtergrond bij hover */
+    }
+
+    .sidebar .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 3em;
+      margin-left: 50px;
+      text-decoration: none;
+      color: black;
+    }
+
+    /* Media queries voor kleinere schermen */
+    @media screen and (max-height: 450px) {
+      .sidebar {padding-top: 15px;}
+      .sidebar a {font-size: 18px;}
+    }
+
+    /* Styling voor de stopknop */
+    .stop-quiz-button { /* Naam gewijzigd om conflicten te voorkomen */
+      margin-top: 2em; /* Ruimte boven de knop, consistent met next-btn */
+      padding: 1em;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background-color: #F44336; /* Rode kleur voor stop */
+      color: white;
+      font-size: 1.1em; /* Consistent met andere knoppen */
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Consistent met andere knoppen */
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      flex-shrink: 0; /* Voorkom dat de knop krimpt in flex container */
+    }
+
+    .stop-quiz-button:hover {
+      background-color: #D32F2F; /* Donkerder rood bij hover */
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <button class="toggle-button" onclick="openNav()">☰</button>
+    <div id="quiz">
+      <div id="timerDisplay" class="timer-display">Tijd: 20</div>
+      <div id="question" class="question"></div>
+      <div id="options"></div>
+      <div id="result" class="result"></div>
+    </div>
+    <button class="stop-quiz-button" onclick="stopQuiz()">Stop Quiz</button> </div>
+
+  <div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="homepage.html">Home</a>
+    <a href="modules.html">Test Modules</a>
+    <a href="leerstof.html">Leerstof</a>
+  </div>
+
+  <script>
+    // Functie om de zijbalk te openen (globaal gemaakt)
+    function openNav() {
+      document.getElementById("mySidebar").style.width = "250px"; // Breedte van de zijbalk
+    }
+
+    // Functie om de zijbalk te sluiten (globaal gemaakt)
+    function closeNav() {
+      document.getElementById("mySidebar").style.width = "0";
+    }
+
+    // Quiz vragen data, georganiseerd in blokken
+    const quizBlokken = [
+      // B L O K  0: Verkeersregels Algemeen (20 vragen)
+      [
+        {
+          vraag: "Wat is de maximumsnelheid binnen de bebouwde kom, tenzij anders aangegeven?",
+          opties: ["30 km/u", "50 km/u", "70 km/u"],
+          juist: 1
+        },
+        {
+          vraag: "Wie heeft voorrang op een gelijkwaardig kruispunt?",
+          opties: ["Bestuurder van links", "Bestuurder van rechts", "Verkeer op de hoofdweg"],
+          juist: 1
+        },
+        {
+          vraag: "Mag u parkeren op een zebrapad?",
+          opties: ["Ja, als het verkeer het toelaat.", "Nee, dat is verboden.", "Alleen kortstondig voor laden en lossen."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer moet u dimlicht voeren?",
+          opties: ["Alleen bij mist of sneeuwval.", "Bij schemering, regen, mist, sneeuwval of in tunnels.", "Alleen 's nachts buiten de bebouwde kom."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een doorgetrokken streep in het midden van de weg?",
+          opties: ["U mag hier inhalen als er geen tegenligger is.", "U mag de streep niet overschrijden of erop rijden.", "Het is een suggestie voor de rijbaanverdeling."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de aanbevolen volgafstand op een droge weg bij 100 km/u?",
+          opties: ["15 meter", "Minimaal 2 seconden reistijd", "30 meter"],
+          juist: 1
+        },
+        {
+          vraag: "U wilt afslaan. Wanneer zet u uw richtingaanwijzer aan?",
+          opties: ["Vlak voordat u afslaat.", "Ruim op tijd, zodat andere weggebruikers uw intentie begrijpen.", "Pas nadat u bent begonnen met afslaan."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de juiste volgorde van voorrang bij een rotonde, tenzij anders aangegeven met borden?",
+          opties: ["Verkeer op de rotonde heeft voorrang.", "Verkeer dat de rotonde oprijdt heeft voorrang.", "Links heeft voorrang."],
+          juist: 0
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een rode rand en een diagonale streep?",
+          opties: ["Een gebodsbord.", "Een verbodsbord.", "Een waarschuwingsbord."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om uw dode hoek te controleren voordat u van rijstrook wisselt?",
+          opties: ["Om te zien of er een geschikte parkeerplaats is.", "Om te controleren of er geen andere voertuigen in uw dode hoek rijden.", "Om de snelheidslimiet te controleren."],
+          juist: 1
+        },
+        {
+          vraag: "U ziet een verkeerslicht op oranje knipperen. Wat betekent dit?",
+          opties: ["U moet stoppen en wachten op groen.", "U mag doorrijden, maar moet extra voorzichtig zijn.", "Het verkeerslicht is defect."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de primaire functie van de alarmlichten?",
+          opties: ["Om aan te geven dat u snel wilt rijden.", "Om andere weggebruikers te waarschuwen voor een gevaarlijke situatie of stilstand.", "Om aan te geven dat u wilt parkeren."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer mag u een tram inhalen?",
+          opties: ["Altijd, aan de linkerzijde.", "Alleen als er voldoende ruimte is en u de tram niet hindert.", "Het is verboden om een tram in te halen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de juiste manier om een file te benaderen?",
+          opties: ["U rijdt met hoge snelheid tot de file begint en remt dan abrupt.", "U vermindert tijdig snelheid en houdt voldoende afstand tot uw voorganger.", "U zoekt de vluchtstrook op."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de maximumsnelheid op de autosnelweg, tenzij anders aangegeven?",
+          opties: ["100 km/u", "120 km/u", "130 km/u"],
+          juist: 2
+        },
+        {
+          vraag: "Waarvoor dient een blauw rond bord met een witte pijl?",
+          opties: ["Geeft een verplichte rijrichting aan.", "Geeft een aanbevolen rijrichting aan.", "Geeft een verboden rijrichting aan."],
+          juist: 0
+        },
+        {
+          vraag: "U wilt parkeren langs de weg. Waar let u op?",
+          opties: ["U parkeert zo dicht mogelijk bij de ingang van een gebouw.", "U parkeert zo dat u het verkeer niet hindert en er voldoende ruimte is.", "U parkeert op de stoep om de weg vrij te houden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is een belangrijke overweging bij het rijden in het donker?",
+          opties: ["U kunt harder rijden omdat er minder verkeer is.", "Uw zicht is beperkt, dus u moet uw snelheid aanpassen en extra voorzichtig zijn.", "U hoeft geen richting aan te geven in het donker."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een groen knipperend verkeerslicht?",
+          opties: ["U moet stoppen.", "Het verkeerslicht gaat zo meteen op oranje, u mag doorrijden als dit veilig is.", "U moet extra gas geven."],
+          juist: 1
+        },
+        {
+          vraag: "U ziet een kind met een bal de weg op rennen. Wat doet u?",
+          opties: ["U claxonneert om het kind te waarschuwen.", "U remt direct en bent voorbereid op onverwachte bewegingen.", "U rijdt voorzichtig om het kind heen."],
+          juist: 1
+        }
+      ],
+      // B L O K  1: Verkeerstekens en Verkeersborden (20 vragen)
+      [
+        {
+          vraag: "Welk bord geeft aan dat u een eenrichtingsweg nadert?",
+          opties: ["Een rond blauw bord met een witte pijl naar rechts.", "Een vierkant blauw bord met een witte pijl naar boven.", "Een driehoekig bord met een rode rand en een auto."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een rode driehoek en een uitroepteken?",
+          opties: ["Gevaar.", "Parkeerplaats.", "Verplichte rijrichting."],
+          juist: 0
+        },
+        {
+          vraag: "Welk bord geeft aan dat het verboden is voor motorvoertuigen om te rijden?",
+          opties: ["Rond rood bord met een witte balk.", "Rond rood bord met een zwarte auto.", "Vierkant blauw bord met een witte auto."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een rood kruis?",
+          opties: ["Voorrangsweg.", "Verboden stil te staan of te parkeren.", "Verboden voor alle verkeer."],
+          juist: 1
+        },
+        {
+          vraag: "Welk bord geeft aan dat u een voorrangsweg nadert?",
+          opties: ["Een driehoekig bord met de punt naar beneden.", "Een vierkant bord met een gele ruit op een witte achtergrond.", "Een rond blauw bord met een witte streep."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een blauwe cirkel en een witte fiets?",
+          opties: ["Fietsers verplicht gebruik van het fietspad.", "Verboden voor fietsers.", "Fietsers toegestaan."],
+          juist: 0
+        },
+        {
+          vraag: "Welk bord geeft aan dat er een gevaarlijke bocht naar rechts aankomt?",
+          opties: ["Een driehoekig bord met een rode rand en een gebogen pijl naar rechts.", "Een rond bord met een rode rand en een pijl naar rechts.", "Een vierkant blauw bord met een pijl naar rechts."],
+          juist: 0
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een blauwe cirkel en een witte pijl die naar beneden wijst?",
+          opties: ["Verplichte rijrichting rechtdoor.", "Verplichte rijrichting naar beneden.", "Minimumsnelheid."],
+          juist: 0
+        },
+        {
+          vraag: "Welk bord geeft aan dat u een inrit nadert?",
+          opties: ["Een vierkant blauw bord met een witte auto.", "Er is geen specifiek bord voor een inrit.", "Een driehoekig bord met een rode rand en een huis."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een blauw vierkant en een witte 'P'?",
+          opties: ["Parkeerplaats.", "Privéterrein.", "Politiepost."],
+          juist: 0
+        },
+        {
+          vraag: "Welk bord geeft het einde van een snelweg aan?",
+          opties: ["Een vierkant blauw bord met een witte auto en een diagonale streep.", "Een rond wit bord met een diagonale streep.", "Er is geen specifiek bord voor het einde van een snelweg."],
+          juist: 0
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een blauwe cirkel en een witte bus?",
+          opties: ["Bushalte.", "Busbaan.", "Verplicht gebruik van de busbaan."],
+          juist: 1
+        },
+        {
+          vraag: "Welk bord geeft een snelheidsbeperking aan?",
+          opties: ["Een rond wit bord met een rode rand en een getal.", "Een vierkant blauw bord met een getal.", "Een driehoekig bord met een getal."],
+          juist: 0
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een witte cirkel en een rode rand, zonder symbolen?",
+          opties: ["Einde van alle verboden.", "Einde van de maximumsnelheid.", "Einde van eenrichtingsverkeer."],
+          juist: 0
+        },
+        {
+          vraag: "Welk bord geeft aan dat u moet stoppen en voorrang verlenen?",
+          opties: ["Een achthoekig rood bord met het woord \"STOP\".", "Een driehoekig bord met de punt naar beneden.", "Een vierkant bord met een pijl."],
+          juist: 0
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een blauw vierkant en een witte man met een schop?",
+          opties: ["Werk in uitvoering.", "Speeltuin.", "Voetgangerszone."],
+          juist: 0
+        },
+        {
+          vraag: "Welk bord geeft aan dat u een tunnel nadert?",
+          opties: ["Een driehoekig bord met een rode rand en een tunnel.", "Een vierkant blauw bord met een tunnel.", "Een rond wit bord met een tunnel."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een witte cirkel en een rode rand, met een getal en een diagonale streep erdoorheen?",
+          opties: ["Einde van de minimumsnelheid.", "Einde van de maximumsnelheid.", "Maximumsnelheid."],
+          juist: 1
+        },
+        {
+          vraag: "Welk bord geeft een tramhalte aan?",
+          opties: ["Een blauw vierkant bord met een tram.", "Er is geen specifiek bord voor een tramhalte.", "Een rond wit bord met een tram."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met een rode cirkel en een streep door het midden?",
+          opties: ["Verboden in te rijden.", "Verboden door te rijden.", "Verplichte stop."],
+          juist: 0
+        }
+      ],
+      // B L O K  2: Techniek van het Voertuig (20 vragen)
+      [
+        {
+          vraag: "Waarom is het belangrijk om de bandenspanning regelmatig te controleren?",
+          opties: ["Om de kleur van de banden te behouden.", "Om het brandstofverbruik te optimaliseren en de levensduur van de banden te verlengen.", "Om de auto sneller te laten rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de remvloeistof?",
+          opties: ["Het smeert de motor.", "Het zorgt voor de overdracht van kracht in het remsysteem.", "Het koelt de motor."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is een goede profieldiepte van de banden essentieel?",
+          opties: ["Voor een betere uitstraling van de auto.", "Voor optimale grip op de weg, vooral bij nat weer.", "Om minder lawaai te maken."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de koplampen?",
+          opties: ["Om andere weggebruikers te verblinden.", "Om de weg te verlichten en zichtbaar te zijn voor anderen.", "Om de motor te koelen."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de oliepeil van de motor regelmatig te controleren?",
+          opties: ["Om te zien of de motor nog schoon is.", "Om ervoor te zorgen dat de motor voldoende gesmeerd wordt en schade te voorkomen.", "Om de temperatuur van de motor te regelen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de ruitenwissers?",
+          opties: ["Om de ruiten te polijsten.", "Om het zicht door de voorruit te verbeteren, vooral bij neerslag.", "Om de auto te ventileren."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de uitlaat?",
+          opties: ["Om de motor te koelen.", "Om uitlaatgassen af te voeren en te reinigen.", "Om de auto sneller te laten rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de remlichten te controleren?",
+          opties: ["Om aan te geven dat u wilt parkeren.", "Om andere weggebruikers te waarschuwen dat u remt.", "Om de auto beter te laten accelereren."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de accu?",
+          opties: ["Het zorgt voor de verlichting in de auto.", "Het levert elektrische energie voor de startmotor en andere elektrische componenten.", "Het koelt de motor."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de koelvloeistof op peil te houden?",
+          opties: ["Om de motor schoon te houden.", "Om oververhitting van de motor te voorkomen.", "Om de auto sneller te laten rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de spiegels aan de auto?",
+          opties: ["Om de auto mooier te maken.", "Om het zicht naar achteren en opzij te bieden.", "Om de windweerstand te verminderen."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de verlichting van uw auto regelmatig te controleren?",
+          opties: ["Om energie te besparen.", "Om goed zicht te hebben en goed zichtbaar te zijn voor andere weggebruikers.", "Om de auto beter te laten accelereren."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de veiligheidsgordel?",
+          opties: ["Om de passagiers vast te houden tijdens het rijden.", "Om de inzittenden te beschermen bij een aanrijding.", "Om de stoel te verstellen."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de ruitensproeiervloeistof op peil te houden?",
+          opties: ["Om de motor te koelen.", "Om de voorruit schoon te kunnen spuiten en zo het zicht te behouden.", "Om de banden te smeren."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van het ABS-systeem (Anti-Blokkeer Systeem)?",
+          opties: ["Om de auto sneller te laten accelereren.", "Om te voorkomen dat de wielen blokkeren bij krachtig remmen, zodat de auto bestuurbaar blijft.", "Om de bandenspanning te controleren."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de claxon te controleren?",
+          opties: ["Om te zien of deze luid genoeg is.", "Om in gevaarlijke situaties andere weggebruikers te waarschuwen.", "Om te zien of de auto nog werkt."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de bandenventielen?",
+          opties: ["Om de banden op te pompen.", "Om de lucht in de banden te houden.", "Om de banden te ontluchten."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de uitlaatgascontrole (APK) regelmatig te laten uitvoeren?",
+          opties: ["Om te zien of de uitlaatgassen schoon zijn.", "Om te controleren of de auto voldoet aan de wettelijke milieunormen.", "Om de uitlaat te laten glimmen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de handrem?",
+          opties: ["Om de auto af te remmen tijdens het rijden.", "Om de auto vast te zetten wanneer deze geparkeerd staat.", "Om de auto te laten slippen."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om het reservewiel (of reparatieset) te controleren?",
+          opties: ["Om te zien of het de juiste maat heeft.", "Om ervoor te zorgen dat u een lekke band kunt verwisselen of repareren indien nodig.", "Om de auto zwaarder te maken."],
+          juist: 1
+        }
+      ],
+      // B L O K  3: Snelheid en Afstand (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "Wat is de aanbevolen volgafstand op een droge weg bij 100 km/u?",
+          opties: ["15 meter", "30 meter", "Minimaal 2 seconden reistijd"],
+          juist: 2
+        },
+        {
+          vraag: "Waarom is het verlagen van uw snelheid belangrijk bij slecht weer (regen, sneeuw)?",
+          opties: ["Om brandstof te besparen.", "Om de remafstand te verkorten en de controle over het voertuig te behouden.", "Om andere weggebruikers te laten zien dat u voorzichtig bent."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de maximale snelheid op een autosnelweg, tenzij anders aangegeven met borden?",
+          opties: ["100 km/u", "120 km/u", "130 km/u"],
+          juist: 2
+        },
+        {
+          vraag: "Wat is de maximumsnelheid binnen de bebouwde kom, tenzij anders aangegeven?",
+          opties: ["30 km/u", "50 km/u", "70 km/u"],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om uw snelheid aan te passen als u een kinderspeelplaats nadert?",
+          opties: ["Om het kind te laten schrikken.", "Kinderen kunnen onverwacht de weg op rennen.", "Er is een verkeersdrempel."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de invloed van een zware aanhanger op uw remafstand?",
+          opties: ["De remafstand wordt korter.", "De remafstand wordt langer.", "Het heeft geen invloed."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de minimumsnelheid op de autosnelweg voor auto's (tenzij files)?",
+          opties: ["50 km/u", "60 km/u", "80 km/u"],
+          juist: 1
+        },
+        {
+          vraag: "Waarom moet u bij mist uw snelheid drastisch verminderen?",
+          opties: ["Om de mist te verdrijven.", "Het zicht is beperkt en de remafstand wordt langer.", "De auto raakt sneller oververhit."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de algemene regel voor het aanhouden van voldoende afstand?",
+          opties: ["Zoveel mogelijk afstand.", "Een afstand die u in staat stelt veilig te stoppen als uw voorganger plotseling remt.", "Precies één autolengte."],
+          juist: 1
+        },
+        {
+          vraag: "U rijdt 80 km/u op een N-weg. Wat is de volgafstand in seconden?",
+          opties: ["1 seconde", "2 seconden", "3 seconden"],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om niet te langzaam te rijden op de snelweg?",
+          opties: ["U hindert dan de verkeersstroom en kunt gevaarlijke situaties veroorzaken.", "U verspilt dan brandstof.", "U mag niet te langzaam rijden."],
+          juist: 0
+        },
+        {
+          vraag: "Wat is de invloed van ijzel op de remafstand?",
+          opties: ["De remafstand blijft hetzelfde.", "De remafstand wordt aanzienlijk korter.", "De remafstand wordt aanzienlijk langer."],
+          juist: 2
+        },
+        {
+          vraag: "Wanneer mag u de vluchtstrook gebruiken?",
+          opties: ["Om files te ontwijken.", "Alleen in noodgevallen, zoals pech of een ongeval.", "Om sneller te rijden."],
+          juist: 1
+        },
+        {
+          vraag: "U nadert een verkeersdrempel. Wat is de juiste actie?",
+          opties: ["U rijdt er met hoge snelheid overheen.", "U vermindert snelheid om comfortabel en veilig over de drempel te rijden.", "U claxonneert om aan te geven dat u eraan komt."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de maximumsnelheid op een erft, tenzij anders aangegeven?",
+          opties: ["15 km/u", "Stapvoets", "30 km/u"],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om uw snelheid aan te passen aan de verkeerssituatie?",
+          opties: ["Om brandstof te besparen.", "Om gevaarlijke situaties te voorkomen en veilig te kunnen handelen.", "Om de politie te ontwijken."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het risico van rijden met cruise control bij gladheid?",
+          opties: ["De auto kan sneller slippen als de snelheid niet handmatig wordt aangepast.", "De auto rijdt zuiniger.", "Cruise control werkt niet bij gladheid."],
+          juist: 0
+        },
+        {
+          vraag: "U rijdt op een weg met rijstroken die worden gescheiden door onderbroken strepen. Wat mag u hier?",
+          opties: ["U mag hier niet inhalen.", "U mag van rijstrook wisselen, mits veilig.", "U mag hier parkeren."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de invloed van zware regenval op het zicht en de remafstand?",
+          opties: ["Zicht wordt beter, remafstand korter.", "Zicht wordt slechter, remafstand langer.", "Geen invloed."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het belangrijkste doel van snelheidslimieten?",
+          opties: ["Om files te veroorzaken.", "Om de verkeersveiligheid te vergroten en de doorstroming te reguleren.", "Om het rijden minder leuk te maken."],
+          juist: 1
+        }
+      ],
+      // B L O K  4: Parkeren en Stilstaan (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "Waar mag u niet stilstaan?",
+          opties: ["Op een parkeerplaats.", "Op een zebrapad of bij een bushalte.", "Naast een gele onderbroken lijn."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het verschil tussen stilstaan en parkeren?",
+          opties: ["Stilstaan is kort, parkeren is lang.", "Stilstaan is alleen voor laden/lossen of in-/uitstappen, parkeren is langer en niet voor die doeleinden.", "Er is geen verschil."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u parkeren op de rijbaan langs een gele doorgetrokken streep?",
+          opties: ["Ja, als er voldoende ruimte is.", "Nee, dit is verboden.", "Alleen 's nachts."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom mag u niet parkeren op een bushalte?",
+          opties: ["Om bussen de doorgang te belemmeren.", "Om de bus en passagiers niet te hinderen bij het in- en uitstappen.", "Het is alleen verboden als er een bus aankomt."],
+          juist: 1
+        },
+        {
+          vraag: "Hoe ver moet u minimaal parkeren van een kruispunt?",
+          opties: ["Minimaal 3 meter.", "Minimaal 5 meter.", "Minimaal 12 meter."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u parkeren op de stoep?",
+          opties: ["Ja, als er geen voetgangers zijn.", "Nee, dit is verboden, tenzij anders aangegeven.", "Alleen lichte voertuigen."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer mag u de alarmlichten gebruiken bij parkeren?",
+          opties: ["Om aan te geven dat u snel wilt parkeren.", "Bij pech of een gevaarlijke situatie, niet om aan te geven dat u parkeert.", "Altijd bij fileparkeren."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de juiste manier om een auto te parkeren op een helling (neus omhoog)?",
+          opties: ["Met de handrem aan en de wielen naar de stoep gedraaid.", "Met de handrem aan en de wielen van de stoep af gedraaid.", "Met de handrem aan en de wielen recht."],
+          juist: 0
+        },
+        {
+          vraag: "Mag u parkeren voor een uitrit?",
+          opties: ["Ja, als het uw eigen uitrit is.", "Nee, dit is verboden omdat u in- en uitgaand verkeer blokkeert.", "Alleen overdag."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een blauw bord met een witte 'P'?",
+          opties: ["Parkeerverbod.", "Parkeerplaats.", "Privéterrein."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de maximale parkeertijd in een blauwe zone zonder parkeerschijf?",
+          opties: ["15 minuten.", "U mag hier niet parkeren zonder parkeerschijf.", "30 minuten."],
+          juist: 1
+        },
+        {
+          vraag: "Wat moet u doen als u uw auto parkeert op een onverlichte weg buiten de bebouwde kom?",
+          opties: ["U laat de motor draaien.", "U zet uw parkeerlichten aan.", "U zet uw alarmlichten aan."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u parkeren op een fietspad?",
+          opties: ["Ja, als het fietspad leeg is.", "Nee, dit is verboden.", "Alleen heel kort."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer is het toegestaan om op de vluchtstrook te stoppen?",
+          opties: ["Om te bellen.", "Alleen in noodgevallen, zoals pech of een ongeval.", "Om passagiers op te halen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een gele onderbroken streep langs de stoeprand?",
+          opties: ["Hier mag u parkeren.", "Hier mag u niet parkeren.", "Hier mag u stilstaan."],
+          juist: 1
+        },
+        {
+          vraag: "U wilt parkeren in een vak met een symbool voor gehandicapten. Mag dat?",
+          opties: ["Ja, als het vak leeg is.", "Nee, alleen met een geldige gehandicaptenparkeerkaart.", "Alleen voor korte tijd."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom mag u niet parkeren op een brug?",
+          opties: ["Het is te smal.", "Het kan de doorstroming belemmeren en gevaarlijke situaties veroorzaken.", "De brug kan instorten."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de regel voor parkeren in een straat met eenrichtingsverkeer?",
+          opties: ["U mag alleen aan de rechterkant parkeren.", "U mag aan beide zijden parkeren, tenzij anders aangegeven.", "U mag hier niet parkeren."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van een parkeerschijf?",
+          opties: ["Om aan te geven hoe lang u geparkeerd staat in een blauwe zone.", "Om aan te geven dat uw auto te koop staat.", "Om de auto te versieren."],
+          juist: 0
+        },
+        {
+          vraag: "Mag u parkeren bij een brandkraan?",
+          opties: ["Ja, als er voldoende ruimte is.", "Nee, dit is verboden om de toegang voor hulpdiensten vrij te houden.", "Alleen als er geen brand is."],
+          juist: 1
+        }
+      ],
+      // B L O K  5: Inhalen en Passeren (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "Wanneer mag u een ander voertuig inhalen?",
+          opties: ["Altijd, als het verkeer voor u te langzaam rijdt.", "Alleen als het veilig is en zonder hinder of gevaar voor anderen.", "Alleen buiten de bebouwde kom."],
+          juist: 1
+        },
+        {
+          vraag: "Aan welke zijde moet u een ander voertuig inhalen?",
+          opties: ["Links.", "Rechts.", "Het maakt niet uit."],
+          juist: 0
+        },
+        {
+          vraag: "Mag u een tram rechts inhalen?",
+          opties: ["Nee, nooit.", "Ja, als deze op een tweerichtingsweg is en u geen rails oversteekt.", "Alleen als de tram stilstaat."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer is inhalen verboden?",
+          opties: ["Bij een doorgetrokken streep in het midden van de weg.", "Op een rotonde.", "Buiten de bebouwde kom."],
+          juist: 0
+        },
+        {
+          vraag: "U wilt inhalen op de snelweg. Wat is de juiste volgorde van handelen?",
+          opties: ["Kijken, richting aangeven, inhalen, terugvoegen.", "Richting aangeven, kijken, inhalen, terugvoegen.", "Inhalen, kijken, richting aangeven."],
+          juist: 0
+        },
+        {
+          vraag: "Mag u een fiets, bromfiets of motorfiets inhalen op een kruispunt?",
+          opties: ["Ja, als het veilig is.", "Nee, inhalen op een kruispunt is verboden.", "Alleen als het licht groen is."],
+          juist: 0
+        },
+        {
+          vraag: "Wat is de regel voor inhalen bij een rotonde?",
+          opties: ["U mag op een rotonde inhalen.", "U mag op een rotonde niet inhalen.", "Alleen als de rotonde leeg is."],
+          juist: 0
+        },
+        {
+          vraag: "Wanneer moet u extra voorzichtig zijn bij het inhalen van een fiets?",
+          opties: ["Als de fietser een helm draagt.", "De fietser kan onverwacht afwijken, vooral bij wind of obstakels.", "Als de fietser snel rijdt."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u een ander voertuig inhalen vlak voor een top van een heuvel?",
+          opties: ["Ja, als u snel bent.", "Nee, omdat het zicht onvoldoende is.", "Alleen als er geen tegenliggers zijn."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent het als een bestuurder voor u zijn rechter richtingaanwijzer aanzet en langzamer gaat rijden?",
+          opties: ["Hij wil rechtsaf slaan.", "Hij wil dat u hem inhaalt.", "Hij heeft pech."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de regel voor inhalen van een tram op een tweerichtingsweg?",
+          opties: ["Altijd links inhalen.", "Links inhalen, tenzij dit niet mogelijk is (bijv. rijstrook).", "Rechts inhalen is toegestaan."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u een voertuig inhalen als u een bord 'Verboden inhalen' ziet?",
+          opties: ["Ja, als het een langzaam voertuig is.", "Nee, dit is een verbodsbord.", "Alleen als er geen tegenliggers zijn."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer moet u extra afstand houden bij het inhalen van een motorfiets?",
+          opties: ["Bij harde wind.", "Motoren zijn minder stabiel, dus extra zijdelingse afstand is veiliger.", "Motoren zijn kleiner, dus minder afstand nodig."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u een ander voertuig inhalen op een overweg?",
+          opties: ["Ja, als de slagbomen open zijn.", "Nee, dit is verboden en zeer gevaarlijk.", "Alleen als er geen trein aankomt."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de regel voor het passeren van een stilstaande tram die passagiers in- of uitlaat?",
+          opties: ["U mag er snel langsrijden.", "U moet stoppen en wachten tot de tram wegrijdt, of voorzichtig passeren als dit veilig kan.", "U mag alleen aan de rechterkant passeren."],
+          juist: 1
+        },
+        {
+          vraag: "U rijdt op een weg met meerdere rijstroken in dezelfde richting. Wanneer mag u rechts passeren?",
+          opties: ["Altijd, als de linkerbaan vol is.", "Bij filevorming en als de rechterrijstrook sneller rijdt dan de linkerrijstrook.", "Nooit, rechts passeren is verboden."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het gevaarlijk om in te halen bij een inhaalverbod?",
+          opties: ["Je krijgt een boete.", "Het kan leiden tot een frontale botsing door onvoldoende zicht of ruimte.", "Het hindert de verkeersstroom."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de juiste actie nadat u succesvol heeft ingehaald?",
+          opties: ["Direct naar rechts sturen.", "Richting aangeven, voldoende ruimte creëren en soepel terugvoegen.", "Harder rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u een schoolbus die stilstaat met knipperende lichten inhalen?",
+          opties: ["Ja, als u voorzichtig bent.", "Nee, u moet stoppen en wachten totdat de lichten uit zijn en de bus wegrijdt.", "Alleen als er geen kinderen zichtbaar zijn."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het doel van de ritsmethode bij het invoegen?",
+          opties: ["Om sneller in te voegen.", "Om de doorstroming te bevorderen en files te voorkomen bij het samengaan van rijstroken.", "Om andere bestuurders te irriteren."],
+          juist: 1
+        }
+      ],
+      // B L O K  6: Kruispunten en Rotondes (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "U nadert een gelijkwaardig kruispunt. Wie heeft voorrang?",
+          opties: ["Verkeer van links.", "Verkeer van rechts.", "Degene die het snelst is."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de juiste handelwijze bij het naderen van een rotonde zonder voorrangsborden?",
+          opties: ["Verkeer op de rotonde heeft voorrang.", "Verkeer dat de rotonde oprijdt heeft voorrang.", "U geeft voorrang aan verkeer van rechts (uitzondering op algemene regel, rotondes zijn vaak aangegeven)."],
+          juist: 1
+        },
+        {
+          vraag: "U wilt linksaf slaan op een kruispunt zonder verkeerslichten of borden. Wie heeft voorrang?",
+          opties: ["Tegemoetkomend verkeer dat rechtdoor gaat of rechtsaf slaat.", "Alleen tegemoetkomend verkeer.", "U heeft voorrang."],
+          juist: 0
+        },
+        {
+          vraag: "Een verkeerslicht staat op groen. Wat doet u als het kruispunt geblokkeerd is?",
+          opties: ["U rijdt het kruispunt op.", "U blijft voor de stoplijn wachten tot u het kruispunt vrij kunt oversteken.", "U claxonneert naar het verkeer voor u."],
+          juist: 1
+        },
+        {
+          vraag: "U rijdt op een voorrangsweg en nadert een kruispunt. Wat betekent een bord met een gele ruit?",
+          opties: ["U moet stoppen.", "U heeft voorrang op alle bestuurders op zijwegen.", "U moet afslaan."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de juiste volgorde van handelen bij het benaderen van een rotonde (met haaientanden bij de opgang)?",
+          opties: ["Richting aangeven, invoegen, afslaan.", "Vertragen, eventueel stoppen, voorrang verlenen aan verkeer op de rotonde, richting aangeven bij afslaan.", "Gas geven om snel op de rotonde te komen."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer mag u keren op een kruispunt?",
+          opties: ["Altijd.", "Alleen als er geen verkeer is.", "Het is verboden op de rijbaan van een kruispunt te keren."],
+          juist: 2
+        },
+        {
+          vraag: "U nadert een kruispunt waar een verkeersregelaar staat. Wat zijn zijn aanwijzingen waard?",
+          opties: ["De aanwijzingen van de verkeersregelaar zijn leidend, boven verkeersborden en -lichten.", "De aanwijzingen van de verkeersregelaar zijn suggesties.", "U volgt de verkeerslichten."],
+          juist: 0
+        },
+        {
+          vraag: "Wat is de regel voor het gebruik van de richtingaanwijzer bij het verlaten van een rotonde?",
+          opties: ["U hoeft geen richting aan te geven.", "U geeft richting aan naar rechts bij het verlaten van de rotonde.", "U geeft richting aan naar links voordat u de rotonde oprijdt."],
+          juist: 1
+        },
+        {
+          vraag: "U wilt rechtdoor op een kruispunt met verkeerslichten. Het licht is groen. U nadert een voetganger op het zebrapad op de weg die u inrijdt. Wat doet u?",
+          opties: ["U rijdt door.", "U stopt om de voetganger voorrang te verlenen.", "U claxonneert."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de betekenis van een haaientandenrij op de weg?",
+          opties: ["U heeft voorrang.", "U moet voorrang verlenen aan verkeer op de kruisende weg.", "U moet stoppen."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer mag u op een kruispunt de linksaf-strook gebruiken?",
+          opties: ["Alleen als u linksaf wilt.", "Als u linksaf wilt of rechtdoor wilt en de rechtdoor-strook is geblokkeerd.", "Het maakt niet uit."],
+          juist: 0
+        },
+        {
+          vraag: "U nadert een kruispunt waar een tram rechtsaf slaat. U wilt rechtdoor. Wie heeft voorrang?",
+          opties: ["U.", "De tram.", "Degene die het eerst aankwam."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het risico van het afsnijden van een bocht op een kruispunt?",
+          opties: ["U bespaart tijd.", "U kunt op de verkeerde weghelft terechtkomen en een aanrijding veroorzaken.", "Het is efficiënter."],
+          juist: 1
+        },
+        {
+          vraag: "Wat doet u als de verkeerslichten op een kruispunt uitgevallen zijn?",
+          opties: ["U volgt de verkeersborden of de algemene voorrangsregels.", "U rijdt door.", "U wacht tot ze weer werken."],
+          juist: 0
+        },
+        {
+          vraag: "Mag u inhalen vlak voor of op een kruispunt?",
+          opties: ["Ja, als het veilig is.", "Nee, dit is verboden, tenzij er meerdere rijstroken in dezelfde richting zijn.", "Alleen als het een rotonde is."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het doel van het creëren van een 'reddingsstrook' in een file op de snelweg (voor hulpdiensten)?",
+          opties: ["Om automobilisten sneller door te laten rijden.", "Om hulpdiensten snel toegang te geven tot een ongeval.", "Om de file te verkorten."],
+          juist: 1
+        },
+        {
+          vraag: "U nadert een kruispunt en ziet een noodstop van een voorganger. Wat is uw reactie?",
+          opties: ["U remt direct ook hard.", "U remt geleidelijk en bent voorbereid op verdere gevaren.", "U claxonneert."],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een groen knipperend verkeerslicht?",
+          opties: ["U moet stoppen.", "Het licht gaat zo over op oranje of rood; u mag doorrijden als dit veilig kan.", "U moet gas geven."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u parkeren op een kruispunt?",
+          opties: ["Ja, als het uw eigen auto is.", "Nee, dit is verboden en gevaarlijk.", "Alleen voor korte tijd."],
+          juist: 1
+        }
+      ],
+      // B L O K  7: Verlichting Gebruik (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "Wanneer moet u dimlicht voeren?",
+          opties: ["Alleen 's nachts.", "Bij schemering, regen, mist, sneeuwval of in tunnels.", "Altijd, overdag en 's nachts."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer mag u grootlicht gebruiken?",
+          opties: ["Altijd, om beter te zien.", "In het donker buiten de bebouwde kom, als er geen tegenliggers zijn en u niemand verblindt.", "Alleen bij mist."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de stadslichten?",
+          opties: ["Om de weg te verlichten.", "Om de auto zichtbaar te maken bij stilstand of parkeren in het donker.", "Om harder te rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer moet u mistlicht aan de voorzijde gebruiken?",
+          opties: ["Bij mist, sneeuwval of zware regenval die het zicht ernstig belemmert (<200m).", "Alleen 's nachts.", "Altijd in de mist."],
+          juist: 0
+        },
+        {
+          vraag: "Wanneer moet u mistachterlicht gebruiken?",
+          opties: ["Bij mist of sneeuwval die het zicht ernstig belemmert (<50m).", "Bij regen.", "Altijd in de mist."],
+          juist: 0
+        },
+        {
+          vraag: "Wat gebeurt er als uw koplampen vuil zijn?",
+          opties: ["Ze geven meer licht.", "De lichtopbrengst vermindert, wat uw zicht en zichtbaarheid beïnvloedt.", "Ze gaan sneller kapot."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het verboden om grootlicht te gebruiken bij dichte mist?",
+          opties: ["Het verbruikt te veel energie.", "Het licht reflecteert terug in de mist, waardoor u juist minder ziet.", "Het heeft geen effect."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de remlichten?",
+          opties: ["Om de weg achter u te verlichten.", "Om achteropkomend verkeer te waarschuwen dat u remt.", "Om aan te geven dat u wilt parkeren."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer moet u uw richtingaanwijzer gebruiken?",
+          opties: ["Vlak voordat u afslaat of van rijstrook wisselt.", "Ruim op tijd, zodat andere weggebruikers uw intentie begrijpen.", "Het is niet verplicht."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u dagrijverlichting (DRL) gebruiken in plaats van dimlicht bij schemering of in een tunnel?",
+          opties: ["Ja, altijd.", "Nee, DRL is alleen voor overdag bij goed zicht; dimlicht is verplicht in deze situaties.", "Alleen als het helder is."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de achteruitrijlichten?",
+          opties: ["Om de weg achter de auto te verlichten.", "Om aan te geven dat u achteruit rijdt.", "Om de achteruitrijcamera te verlichten."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om geen felle lichten (bijv. mobiele telefoon) in de auto aan te hebben in het donker?",
+          opties: ["Het is verboden.", "Het vermindert uw nachtzicht en kan afleiden.", "Het trekt de aandacht van de politie."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer mag u uw parkeerlichten gebruiken?",
+          opties: ["Bij het parkeren overdag.", "Bij het parkeren in het donker op een onverlichte weg.", "Bij het laden en lossen."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u knipperlichten gebruiken om te bedanken?",
+          opties: ["Ja, dit is een gebruikelijke beleefdheidsvorm.", "Nee, knipperlichten zijn alleen voor richting aangeven of gevaar.", "Alleen op snelwegen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van het derde remlicht?",
+          opties: ["Om de auto mooier te maken.", "Om extra duidelijk aan te geven dat er geremd wordt, vooral voor achteropkomend verkeer.", "Om de achterruit te verlichten."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer is het verplicht om uw verlichting aan te hebben op een parkeerplaats in het donker?",
+          opties: ["Nooit, tenzij anders aangegeven.", "Alleen als er geen straatverlichting is.", "Als de auto niet goed zichtbaar is."],
+          juist: 2
+        },
+        {
+          vraag: "Wat is het gevaar van het rijden met defecte verlichting?",
+          opties: ["U krijgt een boete.", "U bent minder zichtbaar en kunt verkeerde inschattingen maken in het donker of bij slecht weer.", "De auto rijdt langzamer."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u verblindende mistlampen aan de voorzijde gebruiken als het alleen regent?",
+          opties: ["Ja, bij elke vorm van neerslag.", "Nee, alleen bij ernstige belemmering van het zicht door mist, sneeuwval of zware regenval.", "Alleen overdag."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de kentekenplaatverlichting?",
+          opties: ["Om de kentekenplaat te verlichten.", "Om de kentekenplaat leesbaar te maken in het donker.", "Om de auto mooier te maken."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u overdag rijden met alleen stadslicht als het bewolkt is?",
+          opties: ["Ja, als het niet regent.", "Nee, stadslicht is onvoldoende om goed zichtbaar te zijn. Dimlicht is dan nodig.", "Het maakt niet uit."],
+          juist: 1
+        }
+      ],
+      // B L O K  8: Rijgedrag en Veiligheid (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "Waarom is het belangrijk om de juiste zithouding aan te nemen achter het stuur?",
+          opties: ["Voor comfort tijdens lange ritten.", "Voor optimale controle over het voertuig en om letsel bij een aanrijding te minimaliseren.", "Om er professioneel uit te zien."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de maximale snelheid die u mag rijden op een woonerf?",
+          opties: ["30 km/u", "Stapvoets", "50 km/u"],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de spiegels goed af te stellen?",
+          opties: ["Om uw kapsel te controleren.", "Om een goed overzicht te hebben van het verkeer achter en naast u, en de dode hoek te minimaliseren.", "Om de auto er mooier uit te laten zien."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het risico van het rijden met één hand aan het stuur?",
+          opties: ["U kunt dan makkelijker schakelen.", "U heeft minder controle over het voertuig in onverwachte situaties.", "Het is comfortabeler."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om kalm te blijven in het verkeer, zelfs bij stressvolle situaties?",
+          opties: ["Om uzelf niet te vermoeien.", "Om rationele beslissingen te kunnen blijven nemen en agressief rijgedrag te voorkomen.", "Om de politie te ontwijken."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de richtingaanduiding (knipperlicht)?",
+          opties: ["Om andere weggebruikers te laten zien dat u een afslag heeft gemist.", "Om uw intentie (richtingverandering) tijdig en duidelijk kenbaar te maken aan andere weggebruikers.", "Om aan te geven dat u sneller wilt rijden."],
+          juist: 1
+        },
+        {
+          vraag: "U nadert een spoorwegovergang met knipperende rode lichten. Wat doet u?",
+          opties: ["U rijdt voorzichtig door.", "U stopt voor de stoplijn en wacht tot de lichten uit zijn.", "U claxonneert."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om op de juiste manier te remmen (progressief remmen)?",
+          opties: ["Om de remmen te sparen.", "Om de remafstand te optimaliseren en de auto stabiel te houden.", "Om bandenslijtage te voorkomen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het nut van het voeren van verlichting bij schemering of slecht weer? ",
+          opties: ["Om te zien waar u rijdt.", "Om goed zichtbaar te zijn voor andere weggebruikers.", "Om brandstof te besparen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het risico van te dicht op uw voorganger rijden (kleefrijden)?",
+          opties: ["U bent sneller op uw bestemming.", "Onvoldoende remafstand, wat leidt tot een verhoogd risico op kop-staartbotsingen.", "Het is comfortabeler."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de dode hoek regelmatig te controleren?",
+          opties: ["Om te zien of uw auto schoon is.", "Om te controleren of er zich geen voertuigen of objecten bevinden die u niet in uw spiegels ziet.", "Om tijd te besparen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van een veiligheidsgordel?",
+          opties: ["Om de passagiers comfortabel te houden.", "Om de inzittenden te beschermen bij een aanrijding of plotselinge stop.", "Om de stoel te versieren."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer moet u uw alarmlichten aanzetten?",
+          opties: ["Bij elke korte stop.", "Bij pech, ongeval of een gevaarlijke situatie om achteropkomend verkeer te waarschuwen.", "Om aan te geven dat u wilt parkeren."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om voldoende rust te nemen voordat u gaat rijden?",
+          opties: ["Om de motor te sparen.", "Vermoeidheid vermindert de concentratie en reactiesnelheid, wat de verkeersveiligheid in gevaar brengt.", "Om brandstof te besparen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de juiste manier om een bocht te nemen?",
+          opties: ["Snel de bocht insturen en dan remmen.", "Snelheid aanpassen vóór de bocht, rustig insturen en gas geven na de bocht.", "In de bocht remmen."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om anticiperend te rijden?",
+          opties: ["Om altijd voorrang te krijgen.", "Om tijdig te reageren op veranderende verkeerssituaties en potentiële gevaren te voorkomen.", "Om sneller te rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het risico van het negeren van verkeersborden?",
+          opties: ["U krijgt een boete.", "U brengt uzelf en andere weggebruikers in gevaar, en het kan leiden tot verkeersovertredingen.", "De auto rijdt dan sneller."],
+          juist: 1
+        },
+        {
+          vraag: "Wat doet u als u merkt dat u afgeleid bent tijdens het rijden (bijv. door de radio)?",
+          opties: ["U negeert de afleiding en blijft rijden.", "U elimineert de afleiding of stopt op een veilige plek om de afleiding aan te pakken.", "U schakelt de afleiding uit en blijft rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de bandenspanning regelmatig te controleren?",
+          opties: ["Voor een betere uitstraling van de auto.", "Voor optimale wegligging, veiligheid, en om slijtage en brandstofverbruik te verminderen.", "Om de banden harder te maken."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het belang van het gebruik van geschikte banden voor de weersomstandigheden (zomer/winter)?",
+          opties: ["Om de auto mooier te maken.", "Voor optimale grip en veiligheid onder de specifieke weersomstandigheden.", "Om brandstof te besparen."],
+          juist: 1
+        }
+      ],
+      // B L O K  9: Noodgevallen en Pech (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "U heeft pech op de snelweg. Wat is de eerste stap die u onderneemt?",
+          opties: ["U probeert de auto zelf te repareren.", "U zet de alarmlichten aan, parkeert de auto zo veilig mogelijk en plaatst een gevarendriehoek.", "U belt direct de wegenwacht."],
+          juist: 1
+        },
+        {
+          vraag: "Waar plaatst u de gevarendriehoek als u pech heeft op een provinciale weg?",
+          opties: ["Direct achter de auto.", "Op ongeveer 30 meter achter de auto, in de rijrichting.", "Op het dak van de auto."],
+          juist: 1
+        },
+        {
+          vraag: "Wat doet u als u een ongeluk ziet gebeuren waar u niet bij betrokken bent?",
+          opties: ["U rijdt door om geen file te veroorzaken.", "U stopt op een veilige plek, zet de alarmlichten aan en belt de hulpdiensten indien nodig.", "U maakt foto's."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van een veiligheidsvest (fluohesje) bij pech langs de weg?",
+          opties: ["Om de auto mooier te maken.", "Om u zichtbaar te maken voor andere weggebruikers, vooral in het donker of bij slecht weer.", "Om warm te blijven."],
+          juist: 1
+        },
+        {
+          vraag: "U heeft een lekke band. Wat doet u als u geen reservewiel heeft en geen reparatieset?",
+          opties: ["U rijdt door naar de dichtstbijzijnde garage.", "U belt de pechhulpdienst.", "U probeert de band zelf te plakken."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het risico als uw auto in brand staat?",
+          opties: ["Alleen materiële schade.", "Brand kan zich snel verspreiden en explosies veroorzaken, wat levensgevaarlijk is.", "De verzekering dekt de schade niet."],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer mag u de brandblusser in uw auto gebruiken?",
+          opties: ["Bij elk brandje, hoe klein ook.", "Alleen bij kleine beginnende branden in het voertuig, en alleen als het veilig is.", "Om anderen te waarschuwen."],
+          juist: 1
+        },
+        {
+          vraag: "U bent betrokken bij een ongeval met letsel. Wat is de eerste stap?",
+          opties: ["Direct de politie bellen.", "De plaats van het ongeval beveiligen en de veiligheid van de slachtoffers waarborgen.", "De schadeformulieren invullen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van een verbanddoos in de auto?",
+          opties: ["Om medicijnen in te bewaren.", "Voor het verlenen van eerste hulp bij kleine verwondingen.", "Voor de APK-keuring."],
+          juist: 1
+        },
+        {
+          vraag: "U ziet een auto op de kop in de berm liggen na een ongeval. Wat doet u?",
+          opties: ["U probeert de auto rechtop te zetten.", "U beveiligt de plek, belt 112 en wacht op hulpdiensten, zonder zelf onnodig risico te nemen.", "U kijkt alleen toe."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u een auto slepen met een touw op de snelweg?",
+          opties: ["Ja, als de afstand minder dan 50 km is.", "Nee, slepen met een touw is alleen toegestaan op korte afstanden buiten de snelweg. Op de snelweg alleen met een sleepwagen.", "Alleen in de file."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de sleepkabel?",
+          opties: ["Om de auto te parkeren.", "Om een auto over korte afstand te slepen bij pech.", "Om de auto vast te binden."],
+          juist: 1
+        },
+        {
+          vraag: "U heeft een aanrijding gehad met alleen materiële schade. Wat doet u?",
+          opties: ["U belt direct de politie.", "U vult samen met de tegenpartij een schadeformulier in en belt de verzekering.", "U rijdt door."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de motorkap niet zomaar te openen als er rook onder vandaan komt?",
+          opties: ["Het is niet gevaarlijk.", "Er kan een vlam in de pan slaan of er kan brand ontstaan.", "De rook kan de motor beschadigen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat doet u als uw auto begint te slippen door gladheid?",
+          opties: ["U remt hard.", "U trapt de koppeling in, stuurt tegen en remt voorzichtig (indien ABS).", "U stuurt zo snel mogelijk van de weg af."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om uw auto te verlaten via de vangrailzijde bij pech op de snelweg?",
+          opties: ["Om de auto niet te hinderen.", "Om uzelf in veiligheid te brengen en het risico op aanrijding door passerend verkeer te minimaliseren.", "Om te zien wat er gebeurt."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de betekenis van een kruis op de weg?",
+          opties: ["Een verbod om te stoppen.", "Een plaats waar een ongeval is gebeurd, ter herinnering.", "Een suggestie voor een kruispunt."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u een overleden persoon verplaatsen na een ongeval?",
+          opties: ["Ja, om de weg vrij te maken.", "Nee, alleen hulpdiensten mogen dit.", "Alleen als er gevaar dreigt."],
+          juist: 1
+        },
+        {
+          vraag: "Wat doet u als u merkt dat uw remmen minder goed werken?",
+          opties: ["U rijdt voorzichtig naar de dichtstbijzijnde garage.", "U stopt zo snel mogelijk op een veilige plek en laat uw auto controleren/slepen.", "U pompt de remmen op."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de wegenwacht te bellen bij pech als u de oorzaak niet weet?",
+          opties: ["Ze zijn gratis.", "Zij hebben de expertise om de auto veilig te repareren of te slepen.", "U mag uw auto niet zelf repareren."],
+          juist: 1
+        }
+      ],
+      // B L O K  10: Alcohol, Drugs en Medicijnen (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "Wat is de wettelijke maximum promillage alcohol voor beginnende bestuurders in Nederland?",
+          opties: ["0,5 promille", "0,2 promille", "0,8 promille"],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is rijden onder invloed van alcohol gevaarlijk?",
+          opties: ["Het maakt je slaperig.", "Het vermindert je reactiesnelheid, beoordelingsvermogen en coördinatie.", "Het maakt je agressief."],
+          juist: 1
+        },
+        {
+          vraag: "Wat zijn de gevolgen als u wordt aangehouden met te veel alcohol op?",
+          opties: ["Een waarschuwing.", "Hoge boetes, rijbewijsontzegging en eventueel een verplichte cursus.", "Niets, als het de eerste keer is."],
+          juist: 1
+        },
+        {
+          vraag: "Welke invloed hebben drugs op uw rijvaardigheid?",
+          opties: ["Ze hebben geen invloed als u er ervaring mee heeft.", "Ze kunnen uw waarneming, concentratie en reactievermogen ernstig beïnvloeden.", "Ze maken u alerter."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u rijden als u medicijnen gebruikt waarvoor een gele sticker op de verpakking zit?",
+          opties: ["Ja, zolang u zich goed voelt.", "Nee, deze medicijnen kunnen de rijvaardigheid beïnvloeden en rijden is dan af te raden of verboden.", "Alleen onder begeleiding."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het beste advies als u alcohol heeft gedronken en toch moet rijden?",
+          opties: ["Een paar koppen koffie drinken.", "Laat u rijden door een BOB, neem het openbaar vervoer of een taxi.", "Langzaam rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de invloed van cannabis op het rijgedrag?",
+          opties: ["Het maakt u ontspannen en kalm.", "Het vertraagt de reactiesnelheid en vermindert het concentratievermogen.", "Het heeft geen invloed."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het gevaarlijk om te rijden met een kater?",
+          opties: ["Je bent niet goed uitgerust.", "Restanten van alcohol en vermoeidheid kunnen nog steeds de rijvaardigheid beïnvloeden.", "Het maakt je dorstig."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u rijden als u medicijnen gebruikt die u slaperig maken?",
+          opties: ["Ja, als u niet ver rijdt.", "Nee, dit is gevaarlijk en af te raden.", "Alleen overdag."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de invloed van slaapmiddelen op uw rijvaardigheid?",
+          opties: ["Ze maken u alert.", "Ze kunnen slaperigheid en verminderde coördinatie veroorzaken.", "Geen invloed als u gewend bent eraan."],
+          juist: 1
+        },
+        {
+          vraag: "Wat zijn de gevolgen van het weigeren van een speekseltest bij verdenking van drugsgebruik?",
+          opties: ["Geen gevolgen.", "Een geldboete en mogelijk een rijbewijsontzegging.", "U mag verder rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Hoe lang blijft alcohol gemiddeld in het bloed?",
+          opties: ["Een paar uur.", "Afhankelijk van de hoeveelheid en persoon, maar afbraak duurt uren.", "Slechts een half uur."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de beste manier om te voorkomen dat u met alcohol op rijdt?",
+          opties: ["Vlak voor het rijden veel water drinken.", "Geen alcohol drinken als u gaat rijden.", "Een dutje doen."],
+          juist: 1
+        },
+        {
+          vraag: "Welke invloed heeft XTC (ecstasy) op het rijgedrag?",
+          opties: ["Het maakt u vrolijk.", "Het kan leiden tot overmoed, vermoeidheid en verminderde concentratie.", "Het verbetert uw reactiesnelheid."],
+          juist: 1
+        },
+        {
+          vraag: "Is het verplicht om medicijnen op recept altijd bij u te hebben in de auto?",
+          opties: ["Ja, altijd.", "Nee, niet verplicht, maar wel handig bij controle of noodgeval.", "Alleen als u naar het buitenland gaat."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de invloed van te veel cafeïne op het rijgedrag?",
+          opties: ["Het maakt u alerter.", "Het kan leiden tot nervositeit, trillen en verminderde concentratie.", "Geen invloed."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u rijden als u zich ziek voelt, zelfs zonder medicijnen?",
+          opties: ["Ja, als u geen koorts heeft.", "Nee, ziekte kan de rijvaardigheid beïnvloeden, waardoor rijden onveilig is.", "Alleen korte afstanden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is een veilige manier om medicatie te bewaren in de auto?",
+          opties: ["Los in het dashboardkastje.", "In de originele verpakking, buiten direct zonlicht.", "Op de hoedenplank."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de wettelijke maximum promillage alcohol voor ervaren bestuurders in Nederland?",
+          opties: ["0,2 promille", "0,5 promille", "0,8 promille"],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het gevaar van het combineren van alcohol met medicijnen?",
+          opties: ["Geen gevaar, de effecten heffen elkaar op.", "Het kan de effecten van zowel alcohol als medicijnen versterken, met ernstige gevolgen voor de rijvaardigheid.", "U wordt sneller nuchter."],
+          juist: 1
+        }
+      ],
+      // B L O K  11: Documenten en Verzekering (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "Welke documenten moet u altijd bij u hebben als u rijdt?",
+          opties: ["Rijbewijs, kentekenbewijs deel IA en verzekeringsbewijs.", "Paspoort en kentekenbewijs.", "Alleen uw rijbewijs."],
+          juist: 0
+        },
+        {
+          vraag: "Wat is de functie van een WA-verzekering voor uw auto?",
+          opties: ["Het dekt schade aan uw eigen auto.", "Het dekt schade die u met uw auto aan derden veroorzaakt.", "Het dekt diefstal van uw auto."],
+          juist: 1
+        },
+        {
+          vraag: "Hoe vaak moet uw auto in Nederland gekeurd worden voor de APK (Algemene Periodieke Keuring)?",
+          opties: ["Eén keer per 5 jaar.", "Minimaal één keer per jaar (afhankelijk van leeftijd/brandstof).", "Alleen bij aanschaf van de auto."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het gevolg als u rijdt zonder geldig rijbewijs?",
+          opties: ["Een waarschuwing.", "Hoge boetes, inbeslagname van het voertuig en een rijverbod.", "Alleen een mondelinge waarschuwing."],
+          juist: 1
+        },
+        {
+          vraag: "U heeft een nieuwe auto gekocht. Binnen welke termijn moet u de auto overschrijven op uw naam?",
+          opties: ["Binnen een week.", "Direct, voordat u de openbare weg opgaat.", "Binnen een maand."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om uw verzekeringsbewijs bij u te hebben?",
+          opties: ["Om aan te tonen dat u verzekerd bent bij een ongeval of controle.", "Om korting te krijgen bij tankstations.", "Het is niet verplicht om bij u te hebben."],
+          juist: 0
+        },
+        {
+          vraag: "Wat is een groene kaart (Internationaal Verzekeringsbewijs)?",
+          opties: ["Een parkeerkaart.", "Een bewijs dat uw voertuig verzekerd is in het buitenland.", "Een kortingskaart voor tolwegen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de geldigheidsduur van een Nederlands rijbewijs B?",
+          opties: ["5 jaar.", "10 jaar.", "Levenslang."],
+          juist: 1
+        },
+        {
+          vraag: "U verkoopt uw auto. Wat is uw verantwoordelijkheid met betrekking tot het kentekenbewijs?",
+          opties: ["U geeft het kentekenbewijs mee aan de koper.", "U moet de auto afmelden bij de RDW en het vrijwaringsbewijs aan de koper geven.", "De koper regelt alles."],
+          juist: 1
+        },
+        {
+          vraag: "Wat gebeurt er als uw auto niet APK-gekeurd is en u rijdt ermee?",
+          opties: ["U krijgt een waarschuwing.", "U riskeert een hoge boete en uw auto mag niet op de openbare weg.", "De verzekering blijft gewoon geldig."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van het kentekenbewijs deel IB (Tenaamstellingscode)?",
+          opties: ["Het is een bewijs van eigendom.", "It is needed for the sale or suspension of the vehicle.", "It is a spare license plate."],
+          juist: 1
+        },
+        {
+          vraag: "Mag u met een rijbewijs B een motorrijden?",
+          opties: ["Ja, altijd.", "Nee, daarvoor is een apart motorrijbewijs (A) nodig.", "Alleen lichte motoren."],
+          juist: 1
+        },
+        {
+          vraag: "Wat moet u doen als uw rijbewijs verloren of gestolen is?",
+          opties: ["Direct aangifte doen bij de politie en een nieuw rijbewijs aanvragen bij de gemeente.", "Niets, u kunt gewoon blijven rijden.", "Alleen een nieuw rijbewijs aanvragen bij de gemeente."],
+          juist: 0
+        },
+        {
+          vraag: "Waarom is het hebben van een geldig rijbewijs essentieel?",
+          opties: ["Om te bewijzen dat u kunt rijden.", "Het is een wettelijke verplichting om een motorvoertuig te mogen besturen.", "Om korting te krijgen op de verzekering."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is een ongevallenformulier (schadeformulier)?",
+          opties: ["Een formulier om de politie te bellen.", "Een formulier om de schade bij een ongeval vast te leggen voor de verzekering.", "Een formulier om de schuldige aan te wijzen."],
+          juist: 1
+        },
+        {
+          vraag: "Moet een aanhanger een eigen kenteken hebben?",
+          opties: ["Nee, nooit.", "Ja, als deze zwaarder is dan 750 kg.", "Alleen als de aanhanger groter is dan de auto."],
+          juist: 1
+        },
+        {
+          vraag: "Waarvoor dient de RDW (Rijksdienst voor het Wegverkeer)?",
+          opties: ["Voor het uitdelen van boetes.", "Voor de registratie van voertuigen en rijbewijzen in Nederland.", "Voor het bouwen van wegen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het verschil tussen een WA-verzekering en een Allrisk-verzekering?",
+          opties: ["WA dekt alleen schade aan derden, Allrisk dekt ook schade aan eigen voertuig.", "WA is duurder dan Allrisk.", "Allrisk is alleen voor nieuwe auto's."],
+          juist: 0
+        },
+        {
+          vraag: "Mag u met een Nederlands rijbewijs B rijden in het buitenland?",
+          opties: ["Nee, u heeft een internationaal rijbewijs nodig.", "Ja, in de meeste landen binnen de EU.", "Alleen in buurlanden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het belang van de meldcode op uw kentekenbewijs?",
+          opties: ["Het is een geheime code.", "Het is nodig bij het afsluiten van een autoverzekering en bij het overschrijven.", "Het is een code voor de radio."],
+          juist: 1
+        }
+      ],
+      // B L O K  12: Technische Aspecten Voertuig (20 vragen) - Nieuw ingevuld
+      [
+        {
+          vraag: "Wat is de primaire functie van de motorolie?",
+          opties: ["De motor koelen.", "Het smeren, koelen en reinigen van de motoronderdelen.", "De motor sneller laten draaien."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is de profieldiepte van de banden belangrijk?",
+          opties: ["Voor de uitstraling van de auto.", "Voor grip op de weg, vooral bij nat weer en voor afvoer van water.", "Om brandstof te besparen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat gebeurt er als de koelvloeistof te laag is?",
+          opties: ["De motor kan sneller opwarmen.", "De motor kan oververhit raken en schade oplopen.", "De airconditioning werkt beter."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de remmen?",
+          opties: ["Om de auto te versnellen.", "Om de snelheid van de auto te verminderen of te stoppen.", "Om de auto te parkeren."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de verlichting van uw auto regelmatig te controleren?",
+          opties: ["Om energie te besparen.", "Om goed zicht te hebben in het donker en zichtbaar te zijn voor anderen.", "Om de accu te sparen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de accu in een auto?",
+          opties: ["Het levert stroom voor de radio.", "Het levert elektrische energie voor de startmotor en de elektrische systemen van de auto.", "Het koelt de motor."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is een correcte bandenspanning essentieel?",
+          opties: ["Voor comfort.", "Voor optimale wegligging, veiligheid en om slijtage en brandstofverbruik te verminderen.", "Om de banden harder te maken."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de uitlaatdemper?",
+          opties: ["Om de uitlaatgassen af te voeren.", "Om het geluid van de motor te dempen.", "Om de motor te koelen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat gebeurt er als de ruitenwissers versleten zijn?",
+          opties: ["De ruiten worden sneller vies.", "Ze vegen het water niet goed weg, wat het zicht beperkt.", "Ze maken meer geluid."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de katalysator?",
+          opties: ["Om de motor sneller te maken.", "Om schadelijke stoffen in de uitlaatgassen om te zetten in minder schadelijke stoffen.", "Om de uitlaat te laten glimmen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het belang van de waarschuwingslampjes op het dashboard?",
+          opties: ["Ze zijn voor de sier.", "Ze geven belangrijke informatie over storingen of problemen met de auto.", "Ze geven aan dat u te hard rijdt."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de claxon?",
+          opties: ["Om te groeten.", "Om andere weggebruikers te waarschuwen in gevaarlijke situaties.", "Om de radio harder te zetten."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom moet u de remvloeistof regelmatig laten vervangen?",
+          opties: ["Het wordt vies.", "Remvloeistof trekt vocht aan, wat de remwerking kan verminderen.", "Het is goed voor de levensduur van de banden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van het stuur?",
+          opties: ["Om de auto te versnellen.", "Om de rijrichting van de auto te bepalen.", "Om de radio te bedienen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is het doel van de ruitensproeierinstallatie?",
+          opties: ["Om de ruiten te polijsten.", "Om de voorruit te reinigen voor een helder zicht.", "Om de motor te koelen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de schokdempers?",
+          opties: ["Om de auto te verhogen.", "Om schokken op te vangen en het contact tussen de banden en de weg te optimaliseren.", "Om de auto harder te laten rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is het belangrijk om de ruitenwisservloeistof op peil te houden?",
+          opties: ["Om de ramen schoon te houden.", "Om de voorruit effectief te kunnen reinigen, wat essentieel is voor goed zicht.", "Om de auto te koelen."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van de koppeling (bij handgeschakelde auto's)?",
+          opties: ["Om de auto te laten remmen.", "Om de verbinding tussen motor en versnellingsbak te verbreken of tot stand te brengen.", "Om de auto sneller te laten rijden."],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de functie van het luchtfilter?",
+          opties: ["De motor koelen.", "Vuil en stof uit de lucht filteren voordat het de motor ingaat.", "De banden opblazen."],
+          juist: 1
+        },
+        {
+          vraag: "Waarom is een werkende handrem belangrijk?",
+          opties: ["Om de auto tijdens het rijden te stoppen.", "Om de auto veilig te parkeren op hellingen of vlakke ondergrond.", "Om sneller te kunnen wegrijden."],
+          juist: 1
+        }
+      ],
+      // B L O K  13: Eerste Hulp bij Ongevallen (20 vragen)
+      Array(20).fill(null).map((_, i) => ({
+        vraag: `Placeholder vraag ${i + 1} over Eerste Hulp bij Ongevallen?`,
+        opties: ["Optie A", "Optie B", "Optie C"],
+        juist: 0
+      })),
+      // B L O K  14: Gevarenherkenning (20 vragen)
+      Array(20).fill(null).map((_, i) => ({
+        vraag: `Placeholder vraag ${i + 1} over Gevarenherkenning?`,
+        opties: ["Optie A", "Optie B", "Optie C"],
+        juist: 0
+      })),
+      // B L O K  15: Verkeersinzicht (20 vragen)
+      Array(20).fill(null).map((_, i) => ({
+        vraag: `Placeholder vraag ${i + 1} over Verkeersinzicht?`,
+        opties: ["Optie A", "Optie B", "Optie C"],
+        juist: 0
+      })),
+      // B L O K  16: Defensief Rijden (20 vragen)
+      Array(20).fill(null).map((_, i) => ({
+        vraag: `Placeholder vraag ${i + 1} over Defensief Rijden?`,
+        opties: ["Optie A", "Optie B", "Optie C"],
+        juist: 0
+      })),
+      // B L O K  17: Algemene Regels (20 placeholder vragen)
+      Array(20).fill(null).map((_, i) => ({
+        vraag: `Placeholder vraag ${i + 1} over Algemene Regels?`,
+        opties: ["Optie A", "Optie B", "Optie C"],
+        juist: 0
+      })),
+      // B L O K  18: Extra Vragen (20 placeholder vragen)
+      Array(20).fill(null).map((_, i) => ({
+        vraag: `Placeholder vraag ${i + 1} over Extra Onderwerpen?`,
+        opties: ["Optie A", "Optie B", "Optie C"],
+        juist: 0
+      })),
+      // B L O K  19: Oefenblok (20 placeholder vragen)
+      Array(20).fill(null).map((_, i) => ({
+        vraag: `Placeholder vraag ${i + 1} voor Oefenblok?`,
+        opties: ["Optie A", "Optie B", "Optie C"],
+        juist: 0
+      }))
+    ];
+
+    let huidigeBlok = 0;
+    let huidigeVraag = 0;
+    let score = 0;
+    let timer = 20; // Starttijd voor de timer is nu 20 seconden
+    let timerInterval; // Variabele om de setInterval bij te houden
+
+    // Referenties naar DOM-elementen
+    const vraagElement = document.getElementById("question");
+    const optiesElement = document.getElementById("options");
+    const resultaatElement = document.getElementById("result");
+    const quizElement = document.getElementById("quiz");
+    const timerDisplay = document.getElementById("timerDisplay"); // Element voor de timer
+
+    /**
+     * Start de timer voor de huidige vraag.
+     */
+    function startTimer() {
+      clearInterval(timerInterval); // Wis eventuele bestaande timers
+      timer = 20; // Reset timer naar 20 seconden
+      timerDisplay.textContent = `Tijd: ${timer}`;
+      timerInterval = setInterval(() => {
+        timer--;
+        timerDisplay.textContent = `Tijd: ${timer}`;
+        if (timer <= 0) {
+          clearInterval(timerInterval);
+          // Als de tijd om is, controleer het antwoord als 'geen antwoord'
+          controleerAntwoord(-1);
+        }
+      }, 1000); // Elke seconde
+    }
+
+    /**
+     * Toont de huidige vraag en de bijbehorende opties.
+     */
+    function toonVraag() {
+      // Controleer of het huidige blok vragen bevat
+      if (quizBlokken[huidigeBlok] && quizBlokken[huidigeBlok].length > 0) {
+        const vraagData = quizBlokken[huidigeBlok][huidigeVraag];
+        vraagElement.textContent = `Vraag ${huidigeVraag + 1}: ${vraagData.vraag}`;
+        optiesElement.innerHTML = "";
+        resultaatElement.className = "result"; // Reset class
+        resultaatElement.textContent = "";
+
+        // Zorg ervoor dat de "Volgende vraag" knop niet zichtbaar is
+        const nextButton = quizElement.querySelector('.next-btn');
+        if (nextButton) nextButton.remove();
+
+        // Maak knoppen voor elke optie
+        vraagData.opties.forEach((optie, index) => {
+          const knop = document.createElement("button");
+          knop.className = "option";
+          knop.textContent = optie;
+          knop.onclick = () => controleerAntwoord(index);
+          optiesElement.appendChild(knop);
+        });
+
+        startTimer(); // Start de timer wanneer een nieuwe vraag wordt getoond
+      } else {
+        // Als het blok leeg is, toon een bericht
+        quizElement.innerHTML = `
+          <h2>Dit theorieblok is nog niet beschikbaar of bevat geen vragen.</h2>
+          <button class="continue-btn" onclick="location.href='modules.html'">Terug naar Modules</button>
+        `;
+        clearInterval(timerInterval); // Stop de timer
+      }
+    }
+
+    /**
+     * Controleert het gekozen antwoord en toont het resultaat.
+     * Gaat automatisch door naar de volgende vraag na een korte vertraging.
+     * @param {number} gekozenIndex - De index van de gekozen optie, of -1 als de tijd om is.
+     */
+    function controleerAntwoord(gekozenIndex) {
+      clearInterval(timerInterval); // Stop de timer zodra een antwoord is gegeven
+
+      const optieKnoppen = optiesElement.querySelectorAll('.option');
+      optieKnoppen.forEach(knop => knop.disabled = true); // Schakel knoppen uit na antwoord
+
+      const juisteIndex = quizBlokken[huidigeBlok][huidigeVraag].juist;
+
+      if (gekozenIndex === -1) { // Tijd om
+        resultaatElement.textContent = "⏱️ Tijd om! Juist antwoord: " + quizBlokken[huidigeBlok][huidigeVraag].opties[juisteIndex];
+        resultaatElement.classList.add('timeout');
+        // Markeer de juiste optie visueel
+        optieKnoppen[juisteIndex].style.backgroundColor = '#C8E6C9'; // Lichtgroen
+        optieKnoppen[juisteIndex].style.color = '#333';
+      } else {
+        if (gekozenIndex === juisteIndex) {
+          score++;
+          resultaatElement.textContent = "✅ Correct!";
+          resultaatElement.classList.add('correct');
+        } else {
+          resultaatElement.textContent = "❌ Fout! Juist antwoord: " + quizBlokken[huidigeBlok][huidigeVraag].opties[juisteIndex];
+          resultaatElement.classList.add('wrong');
+          // Markeer de juiste optie visueel
+          optieKnoppen[juisteIndex].style.backgroundColor = '#C8E6C9'; // Lichtgroen
+          optieKnoppen[juisteIndex].style.color = '#333';
+        }
+      }
+
+      // Ga automatisch door naar de volgende vraag na een korte vertraging
+      setTimeout(() => {
+        nextQuestion();
+      }, 2000); // 2 seconden vertraging om het resultaat te kunnen zien
+    }
+
+    /**
+     * Gaat door naar de volgende vraag of toont het eindresultaat van het blok.
+     */
+    function nextQuestion() {
+      huidigeVraag++;
+      if (quizBlokken[huidigeBlok] && huidigeVraag < quizBlokken[huidigeBlok].length) {
+        toonVraag();
+      } else {
+        toonResultaat();
+      }
+    }
+
+    /**
+     * Slaat de huidige score op en navigeert naar modules.html.
+     */
+    function saveAndExit() {
+        clearInterval(timerInterval); // Stop de timer
+        const totalQuestions = quizBlokken[huidigeBlok].length;
+        const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+
+        // Sla de score op in localStorage (alleen voor de huidige blok-index)
+        let allScores = JSON.parse(localStorage.getItem('allQuizScores')) || [];
+        const moduleName = moduleNames[huidigeBlok] || `Blok ${huidigeBlok + 1}`; // Gebruik de naam uit modules.html
+
+        // Zoek of deze module al een score heeft
+        const existingScoreIndex = allScores.findIndex(s => s.moduleIndex === huidigeBlok);
+
+        const newScoreEntry = {
+            moduleIndex: huidigeBlok,
+            moduleName: moduleName,
+            score: score,
+            total: totalQuestions,
+            percentage: percentage,
+            date: new Date().toLocaleDateString('nl-NL') // Huidige datum toevoegen
+        };
+
+        if (existingScoreIndex > -1) {
+            // Update bestaande score
+            allScores[existingScoreIndex] = newScoreEntry;
+        } else {
+            // Voeg nieuwe score toe
+            allScores.push(newScoreEntry);
+        }
+        localStorage.setItem('allQuizScores', JSON.stringify(allScores));
+
+        // Navigeer naar modules.html
+        location.href = 'modules.html';
+    }
+
+    /**
+     * Stopt de quiz en slaat de score op.
+     */
+    function stopQuiz() {
+        saveAndExit();
+    }
+
+
+    /**
+     * Toont het eindresultaat van het huidige blok.
+     */
+    function toonResultaat() {
+      clearInterval(timerInterval); // Stop de timer als de quiz is voltooid
+      const percentage = Math.round((score / quizBlokken[huidigeBlok].length) * 100);
+
+      // Sla de score op in localStorage (nu met extra info voor scores.html)
+      let quizScores = JSON.parse(localStorage.getItem('quizScores')) || {}; // Oude sleutel (kan worden verwijderd als 'allQuizScores' de enige bron is)
+      quizScores[`blok${huidigeBlok}`] = {
+          score: score,
+          total: quizBlokken[huidigeBlok].length,
+          percentage: percentage
+      };
+      localStorage.setItem('quizScores', JSON.stringify(quizScores));
+
+      // Sla de score ook op in de lijst voor scores.html
+      let allScores = JSON.parse(localStorage.getItem('allQuizScores')) || [];
+      const moduleName = moduleNames[huidigeBlok] || `Blok ${huidigeBlok + 1}`;
+
+      const newScoreEntry = {
+          moduleIndex: huidigeBlok,
+          moduleName: moduleName,
+          score: score,
+          total: quizBlokken[huidigeBlok].length,
+          percentage: percentage,
+          date: new Date().toLocaleDateString('nl-NL')
+      };
+
+      const existingScoreIndex = allScores.findIndex(s => s.moduleIndex === huidigeBlok);
+      if (existingScoreIndex > -1) {
+          allScores[existingScoreIndex] = newScoreEntry;
+      } else {
+          allScores.push(newScoreEntry);
+      }
+      localStorage.setItem('allQuizScores', JSON.stringify(allScores));
+
+
+      quizElement.innerHTML = `
+        <h2>🎉 Je hebt Blok ${huidigeBlok + 1} voltooid!</h2>
+        <p>Score: ${score} van ${quizBlokken[huidigeBlok].length} (${percentage}%)</p>
+        ${huidigeBlok < quizBlokken.length - 1 && quizBlokken[huidigeBlok + 1].length > 0 ? '<button class="continue-btn" onclick="volgendeBlok()">Volgende blok starten</button>' : '<p>✅ Alle quizblokken voltooid of volgende blokken niet beschikbaar!</p>'}
+        <button class="continue-btn" onclick="location.href='modules.html'">Terug naar Modules</button>
+      `;
+    }
+
+    /**
+     * Gaat naar het volgende quizblok en reset de variabelen.
+     */
+    function volgendeBlok() {
+      huidigeBlok++;
+      huidigeVraag = 0;
+      score = 0;
+      // Recreëer de quiz-elementen voor het nieuwe blok
+      quizElement.innerHTML = `
+        <div id="timerDisplay" class="timer-display"></div> <div id="question" class="question"></div>
+        <div id="options"></div>
+        <div id="result" class="result"></div>
+      `;
+      // Update de DOM-referenties na het resetten van innerHTML
+      // (Deze zijn al globaal gedefinieerd, maar voor de zekerheid bij het recreëren van elementen)
+      // vraagElement = document.getElementById("question"); // Niet nodig als ze al globaal zijn
+      // optiesElement = document.getElementById("options");
+      // resultaatElement = document.getElementById("result");
+      // timerDisplay = document.getElementById("timerDisplay"); // Deze moet wel opnieuw, want het element is vervangen
+
+      toonVraag(); // Start de eerste vraag van het nieuwe blok
+    }
+
+    // Namen van de modules (moet overeenkomen met modules.html)
+    const moduleNames = [
+        "Verkeersregels Algemeen",
+        "Verkeerstekens en Verkeersborden",
+        "Techniek van het Voertuig",
+        "Voorrangssituaties",
+        "Inzittenden en Veiligheid",
+        "Milieu en Rijden",
+        "Risicoherkenning en Gevaarherkenning",
+        "Rijgedrag en Wetgeving",
+        "Verkeersinzicht",
+        "Defensief Rijden",
+        "Alcohol, Drugs en Medicijnen",
+        "Documenten en Verzekering",
+        "Technische Aspecten Voertuig",
+        "Eerste Hulp bij Ongevallen",
+        "Gevarenherkenning",
+        "Verkeersinzicht",
+        "Defensief Rijden",
+        "Algemene Regels",
+        "Extra Vragen",
+        "Oefenblok"
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Lees blokIndex uit URL bij het laden van de pagina
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('blok')) {
+          const requestedBlok = parseInt(urlParams.get('blok'));
+          if (!isNaN(requestedBlok) && requestedBlok >= 0 && requestedBlok < quizBlokken.length) {
+              huidigeBlok = requestedBlok;
+          } else {
+              huidigeBlok = 0; // Fallback naar blok 0 als de parameter ongeldig is
+          }
+      }
+
+      toonVraag(); // Start de quiz bij het laden van de pagina
+
+      // Registreer de Service Worker voor PWA functionaliteit
+      if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/service-worker.js')
+                  .then(registration => {
+                      console.log('ServiceWorker registratie succesvol:', registration.scope);
+                  })
+                  .catch(error => {
+                      console.log('ServiceWorker registratie mislukt:', error);
+                  });
+          });
+      }
+    });
+  </script>
+</body>
+</html>

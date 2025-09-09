@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ribba - Leerstof</title> <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-touch-icon" href="/icons/apple-icon-180.png">
+  <link rel="apple-touch-startup-image" href="/icons/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  
+  <style>
+    /* Lettertype aangepast naar Open Sans */
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      /* Achtergrond met de opgegeven afbeelding van homepage.html */
+      background: url('https://i.pinimg.com/736x/56/17/d6/5617d6088a5794f177425ae6780041dd.jpg') no-repeat center center fixed;
+      background-size: cover; /* Zorgt ervoor dat de afbeelding de hele achtergrond bedekt */
+      font-family: 'Open Sans', sans-serif; /* Lettertype aangepast naar Open Sans */
+      overflow: hidden; /* Voorkom scrollbalken door de grote achtergrond */
+      color: white; /* Standaard tekstkleur */
+      
+      /* Eigenschappen voor vloeiendere font rendering */
+      -webkit-font-smoothing: antialiased; /* Voor WebKit/Blink browsers (Chrome, Safari) */
+      -moz-osx-font-smoothing: grayscale; /* Voor Firefox op macOS */
+      text-rendering: optimizeLegibility; /* Optimaliseert tekstweergave voor leesbaarheid */
+    }
+
+    .leerstof-container { /* Naam gewijzigd van .modules-container */
+      width: 90%;
+      max-width: 500px;
+      /* Glassmorphism effect (overgenomen van quiz.html) */
+      background: rgba(255, 255, 255, 0.2); /* Transparante witte achtergrond */
+      border-radius: 20px; /* Meer afgeronde hoeken */
+      padding: 2.5em; /* Meer padding voor een ruimere look */
+      color: #333; /* Donkere tekstkleur voor contrast op lichte achtergrond */
+      text-align: center;
+      backdrop-filter: blur(10px); /* Frosted glass effect */
+      -webkit-backdrop-filter: blur(10px); /* Voor Safari */
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Subtiele witte rand */
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+      position: relative; /* Voor de toggle knop */
+      overflow-y: auto; /* Zorg voor scrollen binnen de container als inhoud te groot is */
+      max-height: 90vh; /* Max hoogte zodat de container niet de hele pagina vult */
+    }
+
+    h1 {
+        font-size: 1.8em;
+        margin-bottom: 0.8em;
+        font-weight: normal; /* Aangepast: niet bold */
+        color: #333;
+    }
+
+    h2 {
+        font-size: 2em;
+        margin-bottom: 1em;
+        color: #333;
+        font-weight: normal; /* Aangepast: niet bold */
+    }
+
+    /* Styling voor de leerstof module knoppen */
+    .leerstof-module-button {
+      background-color: rgba(255, 255, 255, 0.4); /* Transparante lichte achtergrond (zoals quiz.html .option) */
+      color: #333; /* Donkere tekstkleur (zoals quiz.html .option) */
+      padding: 1em;
+      margin: 0.7em 0;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.1em;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      text-decoration: none; /* Verwijder onderstreping voor links */
+      display: block; /* Zorgt dat de link de volledige breedte inneemt */
+      box-sizing: border-box; /* Zorg dat padding meetelt in de breedte */
+    }
+
+    .leerstof-module-button:hover {
+      background-color: rgba(255, 255, 255, 0.6); /* Lichter bij hover (zoals quiz.html .option:hover) */
+      transform: translateY(-2px);
+    }
+
+    /* Styling voor de toggle knop (hamburger menu) - overgenomen van homepage.html */
+    .toggle-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 2em;
+      color: #333; /* Donkere kleur voor het icoon voor contrast op lichte achtergrond */
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    /* Styling voor de zijbalk - overgenomen van homepage.html */
+    .sidebar {
+      height: 100%;
+      width: 0; /* Initieel verborgen */
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      /* Achtergrond met de opgegeven afbeelding */
+      background: url('https://i.pinimg.com/736x/56/17/d6/5617d6088a5794f177425ae6780041dd.jpg') no-repeat center center fixed;
+      background-size: cover; /* Zorgt ervoor dat de afbeelding de hele achtergrond bedekt */
+      overflow-x: hidden;
+      transition: 0.5s; /* Vloeiende overgang bij openen/sluiten */
+      padding-top: 60px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar a {
+      padding: 15px 25px;
+      text-decoration: none;
+      font-size: 1.5em;
+      color: black; /* Zwarte tekst voor menu-items */
+      display: block;
+      transition: 0.3s;
+      text-align: left;
+    }
+
+    .sidebar a:hover {
+      color: white; /* Witte tekst bij hover voor beter contrast */
+      background-color: rgba(0, 0, 0, 0.2); /* Lichte transparante zwarte achtergrond bij hover */
+    }
+
+    .sidebar .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 3em;
+      margin-left: 50px;
+      text-decoration: none;
+      color: black;
+    }
+
+    /* Media queries voor kleinere schermen */
+    @media screen and (max-height: 450px) {
+      .sidebar {padding-top: 15px;}
+      .sidebar a {font-size: 18px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="leerstof-container">
+    <button class="toggle-button" onclick="openNav()">☰</button>
+    <h1>Leerstof</h1>
+    <h2>Kies een theorieblok om de antwoorden te leren:</h2>
+
+    <div id="leerstofModuleList">
+      </div>
+  </div>
+
+  <div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="index.html">Home</a>
+    <a href="modules.html">Test Modules</a>
+    
+  </div>
+
+  <script>
+    // Functie om de zijbalk te openen (globaal gemaakt)
+    function openNav() {
+      document.getElementById("mySidebar").style.width = "250px"; // Breedte van de zijbalk
+    }
+
+    // Functie om de zijbalk te sluiten (globaal gemaakt)
+    function closeNav() {
+      document.getElementById("mySidebar").style.width = "0";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const leerstofModuleListDiv = document.getElementById('leerstofModuleList');
+      const totalModules = 13; // Aantal theorieblokken verminderd van 20 naar 13
+
+      // Namen voor de modules, passend bij theorievragen (zelfde als in modules.html)
+      const moduleNames = [
+        "Verkeersregels Algemeen",
+        "Verkeerstekens en Verkeersborden",
+        "Techniek van het Voertuig",
+        "Voorrangssituaties",
+        "Inzittenden en Veiligheid",
+        "Milieu en Rijden",
+        "Risicoherkenning en Gevaarherkenning",
+        "Rijgedrag en Wetgeving",
+        "Verkeersinzicht",
+        "Defensief Rijden",
+        "Alcohol, Drugs en Medicijnen",
+        "Documenten en Verzekering",
+        "Technische Aspecten Voertuig" // Dit is de 13e module
+        // De volgende 7 zijn verwijderd:
+        // "Eerste Hulp bij Ongevallen",
+        // "Gevarenherkenning",
+        // "Verkeersinzicht",
+        // "Defensief Rijden",
+        // "Algemene Regels",
+        // "Extra Vragen",
+        // "Oefenblok"
+      ];
+
+      // Genereer de leerstof module knoppen
+      for (let i = 0; i < totalModules; i++) {
+        const moduleIndex = i;
+        const moduleName = moduleNames[i]; // Gebruik de naam uit de array
+
+        const button = document.createElement('a');
+        // Link naar een placeholder pagina of een specifieke leerstofpagina voor dit blok
+        button.href = `leerstof_detail.html?blok=${moduleIndex}`; // Voorbeeld: link naar een detailpagina
+        button.className = 'leerstof-module-button';
+
+        const moduleText = document.createElement('span');
+        moduleText.textContent = moduleName;
+        button.appendChild(moduleText);
+
+        leerstofModuleListDiv.appendChild(button);
+      }
+
+      // Registreer de Service Worker voor PWA functionaliteit
+      if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/service-worker.js')
+                  .then(registration => {
+                      console.log('ServiceWorker registratie succesvol:', registration.scope);
+                  })
+                  .catch(error => {
+                      console.log('ServiceWorker registratie mislukt:', error);
+                  });
+          });
+      }
+    });
+  </script>
+</body>
+</html>

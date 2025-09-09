@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modules</title>
+    <link rel="stylesheet" href="style.css"> <style>
+        /* CSS voor de reset knop */
+        #resetScoreBtn {
+            padding: 12px 25px; /* Iets groter voor betere klikbaarheid */
+            background-color: #dc3545; /* Felrood */
+            color: white;
+            border: none;
+            border-radius: 5px; /* Afgeronde hoeken */
+            cursor: pointer;
+            font-size: 1.1em; /* Iets grotere tekst */
+            font-weight: bold; /* Vetgedrukte tekst */
+            text-transform: uppercase; /* Hoofdletters */
+            letter-spacing: 0.5px; /* Iets meer afstand tussen letters */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Lichte schaduw */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Vloeiende overgang */
+            outline: none; /* Geen standaard focus outline */
+        }
+
+        #resetScoreBtn:hover {
+            background-color: #c82333; /* Iets donkerder rood bij hover */
+            transform: translateY(-2px); /* Lichte opwaartse beweging bij hover */
+        }
+
+        #resetScoreBtn:active {
+            background-color: #bd2130; /* Nog donkerder rood bij actief/klik */
+            transform: translateY(0); /* Terug naar originele positie bij klik */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Kleinere schaduw bij actief */
+        }
+    </style>
+</head>
+<body>
+
+    <div style="text-align: center; margin-top: 50px; margin-bottom: 50px;">
+        <button id="resetScoreBtn">Reset de score</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resetBtn = document.getElementById('resetScoreBtn');
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    const confirmReset = confirm("Weet je zeker dat je alle scores wilt resetten? Dit kan niet ongedaan gemaakt worden.");
+
+                    if (confirmReset) {
+                        // DEZE CODE MOET JE AANPASSEN NAAR HOE JIJ JE SCORES OPSLAAT!
+                        // Voorbeeld voor localStorage:
+                        for (let i = 1; i <= 5; i++) { // Pas '5' aan naar het aantal modules dat je hebt
+                            localStorage.removeItem(`module${i}_score`);
+                        }
+                        localStorage.removeItem('totalScore'); // Als je een algemene score hebt
+                        localStorage.removeItem('moduleProgress'); // Of andere relevante sleutels
+
+                        alert("Alle scores zijn gereset!");
+                        location.reload(); // Herlaad de pagina om de geresette scores te tonen
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ribba - Welkom</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ribba Welkom">
+  <link rel="apple-touch-icon" href="/icons/apple-icon-180.png">
+  <link rel="apple-touch-startup-image" href="/icons/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  
+  <style>
+    /* Lettertype aangepast naar Open Sans */
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      /* Achtergrond met de opgegeven afbeelding van homepage.html */
+      background: url('https://i.pinimg.com/736x/56/17/d6/5617d6088a5794f177425ae6780041dd.jpg') no-repeat center center fixed;
+      background-size: cover; /* Zorgt ervoor dat de afbeelding de hele achtergrond bedekt */
+      font-family: 'Open Sans', sans-serif; /* Lettertype aangepast naar Open Sans */
+      overflow: hidden; /* Voorkom scrollbalken door de grote achtergrond */
+      color: white; /* Standaard tekstkleur */
+      
+      /* Eigenschappen voor vloeiendere font rendering */
+      -webkit-font-smoothing: antialiased; /* Voor WebKit/Blink browsers (Chrome, Safari) */
+      -moz-osx-font-smoothing: grayscale; /* Voor Firefox op macOS */
+      text-rendering: optimizeLegibility; /* Optimaliseert tekstweergave voor leesbaarheid */
+    }
+
+    .container { /* Naam gewijzigd van .dashboard-container naar .container voor deze specifieke pagina */
+      width: 90%;
+      max-width: 500px;
+      /* Glassmorphism effect */
+      background: rgba(255, 255, 255, 0.2); /* Transparante witte achtergrond */
+      border-radius: 20px; /* Meer afgeronde hoeken */
+      padding: 2.5em; /* Padding */
+      color: white; /* Tekstkleur in container */
+      text-align: center;
+      backdrop-filter: blur(10px); /* Frosted glass effect */
+      -webkit-backdrop-filter: blur(10px); /* Voor Safari */
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Subtiele witte rand */
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+      position: relative; /* Voor de zijbalk */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center; /* Centreer inhoud verticaal */
+      min-height: 50vh; /* Minimum hoogte zodat content niet te veel krimpt */
+    }
+
+    .welcome-main-text { /* Specifieke stijl voor de grote Welcome tekst */
+        font-size: 3em; /* Grote lettergrootte */
+        font-weight: normal; /* Aangepast van 'bold' naar 'normal' */
+        color: black; /* Zwarte tekst */
+        margin-bottom: 0.5em;
+        display: flex; /* Maak het een flex container om letters naast elkaar te plaatsen */
+        justify-content: center; /* Centreer de letters */
+    }
+
+    .welcome-main-text span {
+        display: inline-block; /* Zodat transformaties toegepast kunnen worden */
+        animation: wave 2.25s infinite ease-in-out; /* Duur van de animatie verhoogd van 1.5s naar 2.25s (50% langzamer) */
+    }
+
+    /* Keyframe animatie voor het golvende effect */
+    @keyframes wave {
+        0%, 100% {
+            transform: translateY(0); /* Start- en eindpositie is normaal */
+        }
+        50% {
+            transform: translateY(-5px); /* Op 50% van de animatie beweegt de letter 5px omhoog (minder dan 10px) */
+        }
+    }
+
+    .welcome-sub-text { /* Stijl voor de introductiezin */
+        font-size: 1.1em;
+        color: black;
+        margin-bottom: 2em; /* Ruimte onder de tekst */
+        line-height: 1.5;
+    }
+
+    .start-button {
+      padding: 1em 2em;
+      border: none;
+      border-radius: 15px;
+      background-color: #003366; /* Marineblauw */
+      color: white;
+      font-size: 1.2em;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      text-decoration: none; /* Als het een a-tag is */
+      display: inline-block; /* Als het een a-tag is */
+    }
+
+    .start-button:hover {
+        background-color: #004080; /* Iets lichtere marineblauw bij hover */
+        transform: translateY(-2px);
+    }
+
+    /* Styling voor de toggle knop (hamburger menu) - overgenomen van index.html */
+    .toggle-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 2em;
+      color: #333; /* Donkere kleur voor het icoon voor contrast op lichte achtergrond */
+      cursor: pointer;
+      z-index: 1001; /* Zorg ervoor dat het boven de zijbalk ligt */
+    }
+
+    /* Styling voor de zijbalk - overgenomen van index.html */
+    .sidebar {
+      height: 100%;
+      width: 0; /* Initieel verborgen */
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      /* Achtergrond met de opgegeven afbeelding */
+      background: url('https://i.pinimg.com/736x/56/17/d6/5617d6088a5794f177425ae6780041dd.jpg') no-repeat center center fixed;
+      background-size: cover; /* Zorgt ervoor dat de afbeelding de hele achtergrond bedekt */
+      overflow-x: hidden;
+      transition: 0.5s; /* Vloeiende overgang bij openen/sluiten */
+      padding-top: 60px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar a {
+      padding: 15px 25px;
+      text-decoration: none;
+      font-size: 1.5em;
+      color: black; /* Zwarte tekst voor menu-items */
+      display: block;
+      transition: 0.3s;
+      text-align: left;
+    }
+
+    .sidebar a:hover {
+      color: white; /* Witte tekst bij hover voor beter contrast */
+      background-color: rgba(0, 0, 0, 0.2); /* Lichte transparante zwarte achtergrond bij hover */
+    }
+
+    .sidebar .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 3em;
+      margin-left: 50px;
+      text-decoration: none;
+      color: black;
+    }
+
+    /* Media queries voor kleinere schermen */
+    @media screen and (max-height: 450px) {
+      .sidebar {padding-top: 15px;}
+      .sidebar a {font-size: 18px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="toggle-button" onclick="openNav()">☰</button>
+    <div class="welcome-main-text" id="welcomeText">Welcome</div>
+    <p class="welcome-sub-text">Welkom bij Ribba! Hier kun je leren en je voorbereiden op je theorie-examen.</p>
+    <a href="leerstof.html" class="start-button">Start</a>
+  </div>
+
+  <div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="index.html">Home</a>
+    <a href="modules.html">Test Modules</a>
+    <a href="leerstof.html">Leerstof</a>
+  </div>
+
+  <script>
+    // Functie om de zijbalk te openen
+    function openNav() {
+      document.getElementById("mySidebar").style.width = "250px"; // Breedte van de zijbalk
+    }
+
+    // Functie om de zijbalk te sluiten
+    function closeNav() {
+      document.getElementById("mySidebar").style.width = "0";
+    }
+
+    // Animatie voor de welkomsttekst
+    document.addEventListener('DOMContentLoaded', () => {
+      const welcomeTextElement = document.getElementById('welcomeText');
+      const text = welcomeTextElement.textContent;
+      welcomeTextElement.innerHTML = ''; // Leeg de originele tekst
+
+      // Voeg elke letter toe als een span met een vertraagde animatie
+      text.split('').forEach((char, index) => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        // Voeg een spatie toe als de character een spatie is, zodat deze niet wordt geanimeerd
+        if (char === ' ') {
+            span.innerHTML = '&nbsp;'; // Gebruik een non-breaking space voor correcte weergave
+        }
+        span.style.animationDelay = `${index * 0.1}s`; // Vertraag de animatie voor elke letter
+        welcomeTextElement.appendChild(span);
+      });
+
+      // Registreer de Service Worker voor PWA functionaliteit (optioneel, maar goed voor app-achtige ervaring)
+      if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/service-worker.js')
+                  .then(registration => {
+                      console.log('ServiceWorker registratie succesvol:', registration.scope);
+                  })
+                  .catch(error => {
+                      console.log('ServiceWorker registratie mislukt:', error);
+                  });
+          });
+      }
+    });
+  </script>
+</body>
+</html>

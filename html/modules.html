@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ribba - Test Modules</title> <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-touch-icon" href="/icons/apple-icon-180.png">
+  <link rel="apple-touch-startup-image" href="/icons/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  
+  <style>
+    /* Lettertype aangepast naar Open Sans */
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      /* Achtergrond met de opgegeven afbeelding van homepage.html */
+      background: url('https://i.pinimg.com/736x/56/17/d6/5617d6088a5794f177425ae6780041dd.jpg') no-repeat center center fixed;
+      background-size: cover; /* Zorgt ervoor dat de afbeelding de hele achtergrond bedekt */
+      font-family: 'Open Sans', sans-serif; /* Lettertype aangepast naar Open Sans */
+      overflow: hidden; /* Voorkom scrollbalken door de grote achtergrond */
+      color: white; /* Standaard tekstkleur */
+      
+      /* Eigenschappen voor vloeiendere font rendering */
+      -webkit-font-smoothing: antialiased; /* Voor WebKit/Blink browsers (Chrome, Safari) */
+      -moz-osx-font-smoothing: grayscale; /* Voor Firefox op macOS */
+      text-rendering: optimizeLegibility; /* Optimaliseert tekstweergave voor leesbaarheid */
+    }
+
+    .modules-container { /* Naam gewijzigd van .quiz-container */
+      width: 90%;
+      max-width: 500px;
+      /* Glassmorphism effect (overgenomen van quiz.html) */
+      background: rgba(255, 255, 255, 0.2); /* Transparante witte achtergrond */
+      border-radius: 20px; /* Meer afgeronde hoeken */
+      padding: 2.5em; /* Meer padding voor een ruimere look */
+      color: #333; /* Donkere tekstkleur voor contrast op lichte achtergrond */
+      text-align: center;
+      backdrop-filter: blur(10px); /* Frosted glass effect */
+      -webkit-backdrop-filter: blur(10px); /* Voor Safari */
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Subtiele witte rand */
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtiele schaduw */
+      position: relative; /* Voor de toggle knop */
+      overflow-y: auto; /* Zorg voor scrollen binnen de container als inhoud te groot is */
+      max-height: 90vh; /* Max hoogte zodat de container niet de hele pagina vult */
+    }
+
+    h1 {
+        font-size: 1.8em;
+        margin-bottom: 0.8em;
+        font-weight: bold;
+        color: #333;
+    }
+
+    h2 {
+        font-size: 2em;
+        margin-bottom: 1em;
+        color: #333;
+        font-weight: normal; /* Aangepast: niet bold */
+    }
+
+    /* Styling voor de module knoppen */
+    .module-button {
+      background-color: rgba(255, 255, 255, 0.4); /* Transparante lichte achtergrond (zoals quiz.html .option) */
+      color: #333; /* Donkere tekstkleur (zoals quiz.html .option) */
+      padding: 1em;
+      margin: 0.7em 0;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.1em;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      text-decoration: none; /* Verwijder onderstreping voor links */
+      display: flex; /* Gebruik flexbox voor uitlijning van tekst en score */
+      justify-content: space-between; /* Spreid de inhoud */
+      align-items: center;
+      box-sizing: border-box; /* Zorg dat padding meetelt in de breedte */
+    }
+
+    .module-button:hover {
+      background-color: rgba(255, 255, 255, 0.6); /* Lichter bij hover (zoals quiz.html .option:hover) */
+      transform: translateY(-2px);
+    }
+
+    .module-score {
+        font-size: 0.9em;
+        font-weight: bold;
+        color: #FFC107; /* Oranje voor scores */
+        min-width: 80px; /* Vaste breedte voor score om uitlijning te behouden */
+        text-align: right;
+    }
+
+    /* Styling voor de toggle knop (hamburger menu) - overgenomen van homepage.html */
+    .toggle-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 2em;
+      color: #333; /* Donkere kleur voor het icoon voor contrast op lichte achtergrond */
+      cursor: pointer;
+      z-index: 1001; /* Zorg ervoor dat het boven de zijbalk ligt */
+    }
+
+    /* Styling voor de zijbalk - overgenomen van homepage.html */
+    .sidebar {
+      height: 100%;
+      width: 0; /* Initieel verborgen */
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      /* Achtergrond met de opgegeven afbeelding */
+      background: url('https://i.pinimg.com/736x/56/17/d6/5617d6088a5794f177425ae6780041dd.jpg') no-repeat center center fixed;
+      background-size: cover; /* Zorgt ervoor dat de afbeelding de hele achtergrond bedekt */
+      overflow-x: hidden;
+      transition: 0.5s; /* Vloeiende overgang bij openen/sluiten */
+      padding-top: 60px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar a {
+      padding: 15px 25px;
+      text-decoration: none;
+      font-size: 1.5em;
+      color: black; /* Zwarte tekst voor menu-items */
+      display: block;
+      transition: 0.3s;
+      text-align: left;
+    }
+
+    .sidebar a:hover {
+      color: white; /* Witte tekst bij hover voor beter contrast */
+      background-color: rgba(0, 0, 0, 0.2); /* Lichte transparante zwarte achtergrond bij hover */
+    }
+
+    .sidebar .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 3em;
+      margin-left: 50px;
+      text-decoration: none;
+      color: black;
+    }
+
+    /* Media queries voor kleinere schermen */
+    @media screen and (max-height: 450px) {
+      .sidebar {padding-top: 15px;}
+      .sidebar a {font-size: 18px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="modules-container">
+    <button class="toggle-button" onclick="openNav()">☰</button>
+    <h1>Test Modules</h1> <h2>Kies een theorieblok om te oefenen:</h2>
+
+    <div id="moduleList">
+      </div>
+<div style="text-align: center; margin-top: 30px; margin-bottom: 30px;">
+<a id="resetScoreBtn" class="module-button" style="background-color: rgba(255, 0, 0, 0.4); color: white; font-weight: normal;">
+  <span>Reset de score</span>
+</a>
+</div>
+
+  </div>
+
+  <div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="index.html">Home</a> <a href="modules.html">Test Modules</a> <a href="leerstof.html">Leerstof</a>
+    
+  </div>
+
+  <script>
+    // Functie om de zijbalk te openen (globaal gemaakt)
+    function openNav() {
+      document.getElementById("mySidebar").style.width = "250px"; // Breedte van de zijbalk
+    }
+
+    // Functie om de zijbalk te sluiten (globaal gemaakt)
+    function closeNav() {
+      document.getElementById("mySidebar").style.width = "0";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const moduleListDiv = document.getElementById('moduleList');
+      const totalModules = 12; // Aantal theorieblokken beperkt tot 12
+
+      // Placeholder namen voor de modules, passend bij theorievragen
+      const moduleNames = [
+        "Verkeersregels Algemeen",
+        "Verkeerstekens en Verkeersborden",
+        "Techniek van het Voertuig",
+        "Voorrangssituaties",
+        "Inzittenden en Veiligheid",
+        "Milieu en Rijden",
+        "Risicoherkenning en Gevaarherkenning",
+        "Rijgedrag en Wetgeving",
+        "Verkeersinzicht",
+        "Defensief Rijden",
+        "Alcohol, Drugs en Medicijnen",
+        "Documenten en Verzekering"
+        
+      ];
+
+      // Haal opgeslagen scores op uit localStorage (deze zijn nu een array van objecten)
+      const allStoredScores = JSON.parse(localStorage.getItem('allQuizScores')) || [];
+
+      // Genereer de module knoppen
+      for (let i = 0; i < totalModules; i++) {
+        const moduleIndex = i;
+        const moduleName = moduleNames[i]; // Gebruik de naam uit de array
+        
+        // Zoek de score voor dit specifieke blok
+        const scoreData = allStoredScores.find(score => score.moduleIndex === moduleIndex);
+
+        const button = document.createElement('a');
+        button.href = `quiz.html?blok=${moduleIndex}`; // Link naar quiz.html met blok index
+        button.className = 'module-button';
+
+        const moduleText = document.createElement('span');
+        moduleText.textContent = moduleName;
+        button.appendChild(moduleText);
+
+        const scoreDisplay = document.createElement('span');
+        scoreDisplay.className = 'module-score';
+
+        if (scoreData) {
+          scoreDisplay.textContent = `${scoreData.score}/${scoreData.total} (${scoreData.percentage}%)`;
+          // Optioneel: kleur de score op basis van percentage
+          if (scoreData.percentage >= 80) {
+              scoreDisplay.style.color = '#4CAF50'; // Groen voor goede score
+          } else if (scoreData.percentage >= 50) {
+              scoreDisplay.style.color = '#FFC107'; // Oranje voor gemiddelde score
+          } else {
+              scoreDisplay.style.color = '#F44336'; // Rood voor lage score
+          }
+        } else {
+          scoreDisplay.textContent = 'Nog niet voltooid';
+          scoreDisplay.style.color = '#999'; // Grijze kleur voor niet voltooid
+        }
+        button.appendChild(scoreDisplay);
+
+        moduleListDiv.appendChild(button);
+      }
+
+      // Registreer de Service Worker voor PWA functionaliteit
+      if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/service-worker.js')
+                  .then(registration => {
+                      console.log('ServiceWorker registratie succesvol:', registration.scope);
+                  })
+                  .catch(error => {
+                      console.log('ServiceWorker registratie mislukt:', error);
+                  });
+          });
+      }
+    });
+  
+    // Reset knop functionaliteit
+    const resetBtn = document.getElementById('resetScoreBtn');
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        const confirmReset = confirm("Weet je zeker dat je alle scores wilt resetten? Dit kan niet ongedaan gemaakt worden.");
+
+        if (confirmReset) {
+          localStorage.removeItem('allQuizScores');
+          alert("Alle scores zijn gereset!");
+          location.reload();
+        }
+      });
+    }
+
+  </script>
+  
+</body>
+</html>

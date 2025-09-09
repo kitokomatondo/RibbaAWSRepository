@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Theorie Quiz – Blok 1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #5DDDE2, #72C0C8, #97BDBD);
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    .quiz-container {
+      width: 90%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 2em;
+      color: white;
+      text-align: center;
+    }
+
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 1.5em;
+    }
+
+    .option {
+      background-color: #B2EBF2;
+      color: white;
+      padding: 0.8em;
+      margin: 0.5em 0;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 1em;
+      width: 100%;
+    }
+
+    .option:hover {
+      background-color: #80DEEA;
+    }
+
+    .result {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+
+    .next-btn, .continue-btn {
+      margin-top: 1.2em;
+      padding: 0.8em;
+      width: 100%;
+      border: none;
+      border-radius: 15px;
+      background-color: #00BCD4;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    .next-btn:hover, .continue-btn:hover {
+      background-color: #26C6DA;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div id="quiz">
+      <div id="question" class="question"></div>
+      <div id="options"></div>
+      <div id="result" class="result"></div>
+      <button class="next-btn" onclick="nextQuestion()">Volgende vraag</button>
+    </div>
+  </div>
+
+  <script>
+    const quizBlokken = [
+      // B L O K  1 : Vragen 1–20
+      [
+        {
+          vraag: "Wat is de maximumsnelheid binnen een bebouwde kom in België?",
+          opties: ["30 km/u", "50 km/u", "70 km/u"],
+          juist: 1
+        },
+        {
+          vraag: "Wie heeft voorrang op een gelijkwaardig kruispunt?",
+          opties: ["Bestuurder van links", "Voetganger", "Bestuurder van rechts"],
+          juist: 2
+        },
+        {
+          vraag: "Mag je parkeren op een zebrapad?",
+          opties: ["Ja", "Nee", "Alleen als het regent"],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer moet je dimlichten gebruiken?",
+          opties: ["Alleen bij mist", "Alleen 's nachts", "Bij schemer, regen of in tunnels"],
+          juist: 2
+        },
+        {
+          vraag: "Wat betekent een doorgetrokken witte lijn?",
+          opties: ["Je mag ze overschrijden bij inhalen", "Je mag er niet over", "Alleen voor vrachtwagens"],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de maximumsnelheid op een autosnelweg?",
+          opties: ["110 km/u", "120 km/u", "130 km/u"],
+          juist: 1
+        },
+        {
+          vraag: "Mag je rechts inhalen op de autosnelweg?",
+          opties: ["Nee, verboden", "Ja, als je haast hebt", "Alleen 's nachts"],
+          juist: 0
+        },
+        {
+          vraag: "Wat betekent een blauw bord met witte pijl naar rechts?",
+          opties: ["Advies", "Verplichte richting", "Inhaalstrook"],
+          juist: 1
+        },
+        {
+          vraag: "Hoeveel bedraagt de remafstand bij 50 km/u?",
+          opties: ["10 meter", "25 meter", "40 meter"],
+          juist: 1
+        },
+        {
+          vraag: "Mag je keren op een autosnelweg?",
+          opties: ["Ja", "Nee", "Soms bij afritten"],
+          juist: 1
+        },
+        {
+          vraag: "Wat is de minimumsnelheid op een autosnelweg?",
+          opties: ["50 km/u", "70 km/u", "90 km/u"],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een driehoekig bord met kindfiguren?",
+          opties: ["Speelplein", "Waarschuwing voor kinderen", "Fietsers"],
+          juist: 1
+        },
+        {
+          vraag: "Wanneer gebruik je grootlicht?",
+          opties: ["Altijd", "Bij mist", "Bij duisternis zonder tegenligger"],
+          juist: 2
+        },
+        {
+          vraag: "Wat is de functie van ABS?",
+          opties: ["Extra snelheid", "Voorkomt blokkeren bij remmen", "Verwarming"],
+          juist: 1
+        },
+        {
+          vraag: "Mag je stilstaan op een fietspad?",
+          opties: ["Nee", "Ja", "Ja, kortstondig"],
+          juist: 0
+        },
+        {
+          vraag: "Wat is de juiste volgafstand bij 90 km/u?",
+          opties: ["18 m", "36 m", "72 m"],
+          juist: 1
+        },
+        {
+          vraag: "Moet je altijd stoppen bij een stopbord?",
+          opties: ["Nee", "Ja", "Alleen bij verkeer"],
+          juist: 1
+        },
+        {
+          vraag: "Mag je parkeren voor je eigen garage?",
+          opties: ["Ja", "Nee", "Alleen overdag"],
+          juist: 1
+        },
+        {
+          vraag: "Wat betekent een verkeersbord met rode rand en vrachtwagen erin?",
+          opties: ["Vrachtwagens toegestaan", "Verboden voor vrachtwagens", "Enkel vrachtwagens"],
+          juist: 1
+        },
+        {
+          vraag: "Hoe herken je een milieuzone?",
+          opties: ["Aan de straatstenen", "Aan een verkeersbord", "Aan apps"],
+          juist: 1
+        }
+      ]
+    ];
+
+    let huidigeBlok = 0;
+    let huidigeVraag = 0;
+    let score = 0;
+
+    const vraagElement = document.getElementById("question");
+    const optiesElement = document.getElementById("options");
+    const resultaatElement = document.getElementById("result");
+    const quizElement = document.getElementById("quiz");
+
+    function toonVraag() {
+      const vraagData = quizBlokken[huidigeBlok][huidigeVraag];
+      vraagElement.textContent = `Vraag ${huidigeVraag + 1}: ${vraagData.vraag}`;
+      optiesElement.innerHTML = "";
+      resultaatElement.textContent = "";
+
+      vraagData.opties.forEach((optie, index) => {
+        const knop = document.createElement("button");
+        knop.className = "option";
+        knop.textContent = optie;
+        knop.onclick = () => controleerAntwoord(index);
+        optiesElement.appendChild(knop);
+      });
+    }
+
+    function controleerAntwoord(gekozenIndex) {
+      const juisteIndex = quizBlokken[huidigeBlok][huidigeVraag].juist;
+      if (gekozenIndex === juisteIndex) {
+        score++;
+        resultaatElement.textContent = "✅ Correct!";
+        resultaatElement.style.color = "#C8E6C9";
+      } else {
+        resultaatElement.textContent = "❌ Fout! Juist antwoord: " + quizBlokken[huidigeBlok][huidigeVraag].opties[juisteIndex];
+        resultaatElement.style.color = "#FFCDD2";
+      }
+    }
+
+    function nextQuestion() {
+      huidigeVraag++;
+      if (huidigeVraag < quizBlokken[huidigeBlok].length) {
+        toonVraag();
+      } else {
+        toonResultaat();
+      }
+    }
+
+    function toonResultaat() {
+      quizElement.innerHTML = `
+        <h2>🎉 Je hebt Blok ${huidigeBlok + 1} voltooid!</h2>
+        <p>Score: ${score} van ${quizBlokken[huidigeBlok].length} (${Math.round((score / quizBlokken[huidigeBlok].length) * 100)}%)</p>
+        ${huidigeBlok < quizBlokken.length - 1 ? '<button class="continue-btn" onclick="volgendeBlok()">Volgende blok starten</button>' : '<p>✅ Alle quizblokken voltooid!</p>'}
+      `;
+    }
+
+    function volgendeBlok() {
+      huidigeBlok++;
+      huidigeVraag = 0;
+      score = 0;
+      quizElement.innerHTML = `
+        <div id="question" class="question"></div>
+        <div id="options"></div>
+        <div id="result" class="result"></div>
+        <button class="next-btn" onclick="nextQuestion()">Volgende vraag</button>
+      `;
+      toonVraag();
+    }
+
+    toonVraag();
+  </script>
+</body>
+</html>
